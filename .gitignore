@@ -1,3 +1,72 @@
-data/downloaded/
+# -----------------------------
+# OS / Éditeur
+# -----------------------------
 .DS_Store
-.env
+*.swp
+*.swo
+*.idea/
+.vscode/
+
+# -----------------------------
+# Environnements virtuels
+# -----------------------------
+.env/
+.venv/
+ENV/
+env/
+venv/
+
+# -----------------------------
+# Python cache / build
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+.eggs/
+build/
+develop-eggs/
+dist/
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# -----------------------------
+# Tests / coverage
+# -----------------------------
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+coverage.xml
+*.cover
+*.py,cover
+
+# -----------------------------
+# Notebooks
+# -----------------------------
+.ipynb_checkpoints/
+
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# Données locales
+# -----------------------------
+Data/
+*.csv
+*.pkl
+*.tsv
+*.json
+*.parquet
+
+# -----------------------------
+# Autres fichiers sensibles
+# -----------------------------
+*.env.local
+*.secrets

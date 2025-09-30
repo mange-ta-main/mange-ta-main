@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "project-mange-ta-main"
+name = "mange-ta-main"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
@@ -12,6 +12,7 @@ license = "MIT"
 keywords = []
 authors = [
   { name = "Zaher Hamadeh", email = "hamadehzaher0@gmail.com" },
+  { name = "François-Xavier Bonnefont", email = "bonnefontfx@gmail.com"}
   # ajoutez vos noms et emails ici
 ]
 # classifiers = [
@@ -19,6 +20,9 @@ authors = [
 #   "Programming Language :: Python :: 3.12",
 #   "Programming Language :: Python :: Implementation :: CPython",
 #
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mange_ta_main"]
 
 dependencies = [
     "numpy==2.3.*",
@@ -36,7 +40,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-app = "streamlit run src/mange-ta-main/main.py"
+app = "streamlit run src/mange_ta_main/main.py"
 
 
 # [project.urls]
@@ -45,7 +49,7 @@ app = "streamlit run src/mange-ta-main/main.py"
 # Source = "https://github.com/U.N. Owen/project-mange-ta-main"
 
 [tool.hatch.version]
-path = "src/mange-ta-main/__about__.py"
+path = "src/mange_ta_main/__about__.py"
 
 [tool.hatch.envs.default]
 type = "virtual"
