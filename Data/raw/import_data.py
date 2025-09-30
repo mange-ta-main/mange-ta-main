@@ -12,7 +12,7 @@ pkl_path = "Data/RAW_recipes_local.pkl"
 
 # Étape 1 : télécharger le CSV seulement s'il n'existe pas
 if not os.path.exists(csv_path):
-    print("CSV non trouvé, téléchargement en cours...")
+    print("CSV non trouvé, téléchargement.")
     file_path = "RAW_recipes.csv"
     df = kagglehub.load_dataset(
         KaggleDatasetAdapter.PANDAS,
