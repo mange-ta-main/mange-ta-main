@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+from pathlib import Path
 
 
-st.write("my first streamlit app")
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "dowloaded"
+
+st.write(DATA_DIR)

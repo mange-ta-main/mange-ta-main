@@ -1,2 +1,3 @@
-Data/downloaded/
+data/downloaded/
 .DS_Store
+.env

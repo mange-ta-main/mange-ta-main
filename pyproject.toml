@@ -19,7 +19,7 @@ authors = [
 #   "Programming Language :: Python :: 3.12",
 #   "Programming Language :: Python :: Implementation :: CPython",
 #
-]
+
 dependencies = [
     "numpy==2.3.*",
     "matplotlib==3.10.*",
