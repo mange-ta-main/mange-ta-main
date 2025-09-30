@@ -2,6 +2,7 @@
 # OS / Éditeur
 # -----------------------------
 *.DS_Store
+Data/.DS_Store
 *.swp
 *.swo
 *.idea/
