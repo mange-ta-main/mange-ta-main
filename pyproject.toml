@@ -35,8 +35,9 @@ dependencies = [
     "streamlit==1.50.*",
 ]
 
-[project.scripts]
+[tool.hatch.envs.default.scripts]
 app = "streamlit run src/mange-ta-main/main.py"
+
 
 # [project.urls]
 # Documentation = "https://github.com/U.N. Owen/project-mange-ta-main#readme"
