@@ -7,66 +7,70 @@ name = "project-mange-ta-main"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = "==3.12.*"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "U.N. Owen", email = "void@some.where" },
+  { name = "Zaher Hamadeh", email = "hamadehzaher0@gmail.com" },
+  # ajoutez vos noms et emails ici
 ]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
+# classifiers = [
+#   "Development Status :: 4 - Beta",
+#   "Programming Language :: Python :: 3.12",
+#   "Programming Language :: Python :: Implementation :: CPython",
+#
 ]
 dependencies = [
-numpy==2.3.*
-matplotlib==3.10.*
-pandas==2.3.*
-seaborn==0.13.*
-scikit-learn==1.7.*
-plotly==6.3.*
-nltk==3.9.*
-spacy==3.8.*
-fasttext==0.9.*
-gensim==4.3.*
-torch==2.8.*
+    "numpy==2.3.*",
+    "matplotlib==3.10.*",
+    "pandas==2.3.*",
+    "seaborn==0.13.*",
+    "scikit-learn==1.7.*",
+    "plotly==6.3.*",
+    "nltk==3.9.*",
+    "spacy==3.8.*",
+    "fasttext==0.9.*",
+    "gensim==4.3.*",
+    "torch==2.8.*",
+    "streamlit==1.50.*",
 ]
 
+[project.scripts]
+app = "streamlit run src/mange-ta-main/main.py"
 
-[project.urls]
-Documentation = "https://github.com/U.N. Owen/project-mange-ta-main#readme"
-Issues = "https://github.com/U.N. Owen/project-mange-ta-main/issues"
-Source = "https://github.com/U.N. Owen/project-mange-ta-main"
+# [project.urls]
+# Documentation = "https://github.com/U.N. Owen/project-mange-ta-main#readme"
+# Issues = "https://github.com/U.N. Owen/project-mange-ta-main/issues"
+# Source = "https://github.com/U.N. Owen/project-mange-ta-main"
 
 [tool.hatch.version]
-path = "src/project_mange_ta_main/__about__.py"
+path = "src/mange-ta-main/__about__.py"
 
-[tool.hatch.envs.env_MTM]
-description = "Environnement pour Mange Ta Main"
-python = "/opt/homebrew/bin/python3.12"
+[tool.hatch.envs.default]
+type = "virtual"
+path = ".env/"
+installer = "uv"
+python = "3.12"
 
+# [tool.hatch.envs.default.scripts]
+# app = "streamlit run src/mange-ta-main/main.py"
 
-[tool.coverage.run]
-source_pkgs = ["project_mange_ta_main", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/project_mange_ta_main/__about__.py",
-]
-
-[tool.coverage.paths]
-project_mange_ta_main = ["src/project_mange_ta_main", "*/project-mange-ta-main/src/project_mange_ta_main"]
-tests = ["tests", "*/project-mange-ta-main/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+# on aura besoin de ca plutard
+# [tool.coverage.run]
+# source_pkgs = ["project_mange_ta_main", "tests"]
+# branch = true
+# parallel = true
+# omit = [
+#   "src/project_mange_ta_main/__about__.py",
+# ]
+#
+# [tool.coverage.paths]
+# project_mange_ta_main = ["src/project_mange_ta_main", "*/project-mange-ta-main/src/project_mange_ta_main"]
+# tests = ["tests", "*/project-mange-ta-main/tests"]
+#
+# [tool.coverage.report]
+# exclude_lines = [
+#   "no cov",
+#   "if __name__ == .__main__.:",
+#   "if TYPE_CHECKING:",
+# ]
