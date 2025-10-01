@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
     
 recipes = pd.read_pickle("Data/RAW_recipes_local.pkl")
+print(recipes["nutrition"][0])
 
 #Spliting the nutrition datas to perform some analyses
 nutrition_split = recipes["nutrition"].str.strip("[]").str.split(",", expand=True)
@@ -18,7 +19,7 @@ nutrition_split.columns = [
 ]
 nutrition_split = nutrition_split.astype(float)
 recipes = pd.concat([recipes, nutrition_split], axis=1)
-
+#print(recipes.head(10))
 fig, ax = plt.subplots(2, 4, figsize=(20, 8))
 ax = ax.flatten()
 
@@ -48,18 +49,18 @@ for i, col in enumerate(cols, start=1):  # start=1 car ax[0] est déjà utilisé
     ax[i].boxplot(col_no_max)
     ax[i].set_title(f"Boxplot {col}")
 
-#plt.show()
+"""plt.show()"""
 
 # 2. Get the mean of each nutrition score
 dict_mean_values = recipes[cols].mean().round(1).to_dict()
 labels = list(dict_mean_values.keys())
 values = list(dict_mean_values.values())
-print("--------------------------------------------------")
+"""print("--------------------------------------------------")
 print("--------------------------------------------------")
 print("Mean values of nutrition score: ", dict_mean_values)
 print("--------------------------------------------------")
 print("--------------------------------------------------")
 top10_calories = recipes.nlargest(1000, 'calories')
-print("Top 1000 fatty recipes:\n", top10_calories[["name", "calories"]])
+print("Top 1000 fatty recipes:\n", top10_calories[["name", "calories"]])"""
 
 
