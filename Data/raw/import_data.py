@@ -1,7 +1,6 @@
 # Install dependencies as needed:
 # pip install kagglehub[pandas-datasets]
-import kagglehub
-from kagglehub import KaggleDatasetAdapter
+from kagglehub import KaggleDatasetAdapter, load_dataset
 import os
 import pandas as pd
 
@@ -14,7 +13,7 @@ pkl_path = "Data/RAW_recipes_local.pkl"
 if not os.path.exists(csv_path):
     print("CSV non trouvé, téléchargement.")
     file_path = "RAW_recipes.csv"
-    df = kagglehub.load_dataset(
+    df = load_dataset(
         KaggleDatasetAdapter.PANDAS,
         "shuyangli94/food-com-recipes-and-user-interactions",
         file_path,

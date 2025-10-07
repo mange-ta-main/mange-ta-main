@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 recipes = pd.read_pickle("Data/RAW_recipes_local.pkl")
 print(recipes["nutrition"][0])
 
-#Spliting the nutrition datas to perform some analyses
+#Spliting the nutrition datas and add each columns in the dataser to perform some analyses
 nutrition_split = recipes["nutrition"].str.strip("[]").str.split(",", expand=True)
 nutrition_split.columns = [
     "calories", 
