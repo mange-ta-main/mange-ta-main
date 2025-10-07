@@ -49,18 +49,9 @@ for i, col in enumerate(cols, start=1):  # start=1 car ax[0] est déjà utilisé
     ax[i].boxplot(col_no_max)
     ax[i].set_title(f"Boxplot {col}")
 
-"""plt.show()"""
-
 # 2. Get the mean of each nutrition score
 dict_mean_values = recipes[cols].mean().round(1).to_dict()
 labels = list(dict_mean_values.keys())
 values = list(dict_mean_values.values())
-"""print("--------------------------------------------------")
-print("--------------------------------------------------")
-print("Mean values of nutrition score: ", dict_mean_values)
-print("--------------------------------------------------")
-print("--------------------------------------------------")
-top10_calories = recipes.nlargest(1000, 'calories')
-print("Top 1000 fatty recipes:\n", top10_calories[["name", "calories"]])"""
 
 
