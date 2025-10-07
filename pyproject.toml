@@ -15,11 +15,6 @@ authors = [
   { name = "François-Xavier Bonnefont", email = "bonnefontfx@gmail.com"}
   # ajoutez vos noms et emails ici
 ]
-# classifiers = [
-#   "Development Status :: 4 - Beta",
-#   "Programming Language :: Python :: 3.12",
-#   "Programming Language :: Python :: Implementation :: CPython",
-#
 
 dependencies = [
     "numpy==2.3.*",
@@ -34,48 +29,23 @@ dependencies = [
     "gensim==4.3.*",
     "torch==2.8.*",
     "streamlit==1.50.*",
+    "kagglehub[pandas-datasets]==0.3.*"
 ]
 
 [tool.hatch.envs.default.scripts]
 app = "streamlit run src/mange_ta_main/main.py"
+init_data = "python Data/raw/import_data.py"
 
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mange_ta_main"]
 
-# [project.urls]
-# Documentation = "https://github.com/U.N. Owen/project-mange-ta-main#readme"
-# Issues = "https://github.com/U.N. Owen/project-mange-ta-main/issues"
-# Source = "https://github.com/U.N. Owen/project-mange-ta-main"
 
 [tool.hatch.version]
-path = "src/mange-ta-main/__about__.py"
+path = "src/mange_ta_main/__about__.py"
 
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".env/"
 installer = "uv"
 python = "3.12"
-
-# [tool.hatch.envs.default.scripts]
-# app = "streamlit run src/mange-ta-main/main.py"
-
-# on aura besoin de ca plutard
-# [tool.coverage.run]
-# source_pkgs = ["project_mange_ta_main", "tests"]
-# branch = true
-# parallel = true
-# omit = [
-#   "src/project_mange_ta_main/__about__.py",
-# ]
-#
-# [tool.coverage.paths]
-# project_mange_ta_main = ["src/project_mange_ta_main", "*/project-mange-ta-main/src/project_mange_ta_main"]
-# tests = ["tests", "*/project-mange-ta-main/tests"]
-#
-# [tool.coverage.report]
-# exclude_lines = [
-#   "no cov",
-#   "if __name__ == .__main__.:",
-#   "if TYPE_CHECKING:",
-# ]
