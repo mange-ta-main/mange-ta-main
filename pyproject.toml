@@ -29,8 +29,8 @@ dependencies = [
     "gensim==4.3.*",
     "torch==2.8.*",
     "streamlit==1.50.*",
-    "kagglehub[pandas-datasets]==0.3.*"
-    "st-page==0.4*"
+    "kagglehub[pandas-datasets]==0.3.*",
+    "st-pages==0.4.*"
 ]
 
 [tool.hatch.envs.default.scripts]
