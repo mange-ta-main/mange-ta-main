@@ -6,8 +6,6 @@ from pathlib import Path
 DATA_DIR = Path(__file__).parent.parent.parent / "Data"
 CSV_FILE = DATA_DIR / "RAW_recipes_local.csv"
 
-st.title("Data Visualization with Streamlit")
-
 # Load the data
 @st.cache_data  # Cache the data for better performance
 def load_data():
