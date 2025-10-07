@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-import fx_main
 
 # this can be in a settings file later
 DATA_DIR = Path(__file__).parent.parent.parent / "Data"
@@ -27,5 +26,3 @@ column = st.selectbox("Select column for histogram:", df.select_dtypes(include='
 if column:
     fig = df[column].hist(bins=30)
     st.pyplot(fig.get_figure())
-    
-st.bar_chart(fx_main.recipes["sugar"])
