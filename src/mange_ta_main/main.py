@@ -1,6 +1,5 @@
 from utils.data_loader import load_data
 import streamlit as st
-
 df_recipes, df_interactions = load_data()
 
 # Display basic info
