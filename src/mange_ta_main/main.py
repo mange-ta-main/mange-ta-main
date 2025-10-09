@@ -1,8 +1,11 @@
 from utils.data_loader import load_data
 import streamlit as st
 
-df_main = load_data()
+df_recipes, df_interactions = load_data()
 
 # Display basic info
 st.header("Data")
-st.dataframe(df_main.head())
+st.title("RECIPES:")
+st.dataframe(df_recipes.head())
+st.title("INTERACTIONS:")
+st.dataframe(df_interactions.head())
