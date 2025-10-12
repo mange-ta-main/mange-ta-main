@@ -193,6 +193,11 @@ print(f"Contribution de ces {n_band} contributeurs : {share_band:.2%}")
 # ------------------------------------------------- BIVARIE --------------------------------------------------------------#
 # ------------------------------------------------------------------------------------------------------------------------#
 
+# Etude des top_277 contributeurs dans le temps
+# On fait un clustering des trajectoirres temporelles des contributeurs
+
+
+
 
 
 # Sélection des deux colonnes 'contributor_id' et 'submitted'
