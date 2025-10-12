@@ -68,27 +68,68 @@ activity["cluster"] = labels
 n_clusters_found = len(set(labels))
 print("Nombre de clusters créés :", n_clusters_found)
 # ---------------------------------------------------------------------------------------#
-plt.figure(figsize=(10,4))
-for c in range(4):  # 4 clusters
-    plt.plot(activity.columns[:-1], km.cluster_centers_[c], label=f"Cluster {c}")
-plt.title("Évolution moyenne standardisée de l'activité par cluster")
-plt.xlabel("Mois")
-plt.ylabel("Z-score d'activité")
-plt.legend()
-plt.tight_layout()
-plt.show()
+# plt.figure(figsize=(10,4))
+# for c in range(4):  # 4 clusters
+#     plt.plot(activity.columns[:-1], km.cluster_centers_[c], label=f"Cluster {c}")
+# plt.title("Évolution moyenne standardisée de l'activité par cluster")
+# plt.xlabel("Mois")
+# plt.ylabel("Z-score d'activité")
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
 # ---------------------------------------------------------------------------------------#
 
-
+# étude des cluster 0 et 3
 cluster_3 = activity[activity['cluster']==3]
+cluster_0 = activity[activity['cluster']==0]
 contributor_cluster_3 = cluster_3.index.tolist()
-print(f'nombre de contributeurs dans cluster_3:',len(contributor_cluster_3)) # le cluster 3 ne contient qu'une seule personne
-id_super_star = contributor_cluster_3[0]
-nb_recettes = df_recipes[df_recipes['contributor_id']==id_super_star].shape[0]
-print(f'nombre de recette de la super stare: ',nb_recettes)
+contributor_cluster_0 = cluster_0.index.tolist()
 
-print(type(id_super_star))
-print(df_recipes['contributor_id'].dtype)
+print(f'nombre de contributeurs dans cluster_3:',len(contributor_cluster_3))
+print(f'nombre de contributeurs dans cluster_0:',len(contributor_cluster_0))
+
+id_cluster_3 = contributor_cluster_3[0]
+id_cluster_0 = contributor_cluster_0[0]
+
+nb_recettes_cluster_3 = df_recipes[df_recipes['contributor_id']==id_cluster_3].shape[0]
+nb_recettes_cluster_0 = df_recipes[df_recipes['contributor_id']==id_cluster_0].shape[0]
+
+print(f'nombre de recette de cluster 3: ',nb_recettes_cluster_3)
+print(f'nombre de recette de cluster 0: ',nb_recettes_cluster_0)
+
+
+
+# Etude avec un critère de réescense
+START, END = pd.Timestamp('2008-01-01'), pd.Timestamp('2014-12-31')
+
+# Contributeurs des clusters 0 & 3
+targets = activity.index[activity['cluster'].isin([0, 3])]
+
+# Dernière publication (toutes périodes)
+last_pub = df_recipes.groupby('contributor_id')['submitted'].max()
+
+# Diagnostic : % des cibles (0/3) qui NE sont plus actives en fin de fenêtre
+cutoff = pd.Timestamp('2013-01-01')
+pct_inactifs = (last_pub.loc[targets] < cutoff).mean()
+print(f"% des contributeurs 0/3 inactifs depuis avant 2013 : {pct_inactifs:.1%}")
+
+# Super cœur récent : 0/3 avec dernière publication dans la fenêtre (ou après cutoff)
+super_coeur = [cid for cid in targets if last_pub.get(cid, pd.Timestamp.min) >= cutoff]
+print("Taille du super cœur (récents) :", len(super_coeur))
+
+# Option régularité: mois actifs entre 2008 et 2014
+df_win = df_recipes[(df_recipes['submitted']>=START) & (df_recipes['submitted']<=END)]
+df_win = df_win[df_win['contributor_id'].isin(targets)].copy()
+df_win['month'] = df_win['submitted'].dt.to_period('M').dt.to_timestamp()
+
+mois_actifs = (df_win.groupby(['contributor_id','month'])['id'].nunique()>0)\
+               .groupby('contributor_id').sum()
+super_coeur_reg = mois_actifs[mois_actifs >= 6].index.tolist()  # ex. ≥ 6 mois actifs
+
+
+# extraction du super coeur
+df_super_coeur = df_recipes[df_recipes['contributor_id'].isin(super_coeur)]
+print(df_super_coeur.head(33))
 
 # Analyse univariée:
 # - l'analyse univariée de contributor_id a montré qu'il y avait un top_contributor(277) correspondant au percentil 99;
@@ -107,6 +148,21 @@ print(df_recipes['contributor_id'].dtype)
 # une étude de 2000 à 2014.
 
 # Dans le cadre de la fidélisation des conributeurs, il faudrait récompenser les contributeurs des clusters 0 et 3 (réguliers et nouvelle vague)
+# nombre de contributeurs dans cluster_3: 33
+# nombre de contributeurs dans cluster_0: 5
+# nombre de recette de cluster 3:  343
+# nombre de recette de cluster 0:  2493
+
+# Etude de rescence
+# en faisant une étude de rescence selon les critères suivants 
+#   - Appartenance à clusters 0 ou 3
+#   - Dernière publi ≥ 2013-01-01
+#   - (Option) ≥ 6 mois actifs sur 2008–2014
+# 
+# on obtient:
+#   - % des contributeurs 0/3 inactifs depuis avant 2013 : 13.2%
+#   - Taille du super cœur (récents) : 33
+
 
 
 
