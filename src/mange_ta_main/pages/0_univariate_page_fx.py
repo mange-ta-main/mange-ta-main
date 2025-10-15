@@ -1,7 +1,9 @@
+import matplotlib
 import streamlit as st
 from utils.data_loader import load_data
 import pandas as pd
 import matplotlib.pyplot as plt
+matplotlib.use("Agg")  # backend non graphique compatible Streamlit
 import seaborn as sns
 
 # Configuration de la page
