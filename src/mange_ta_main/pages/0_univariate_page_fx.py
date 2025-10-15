@@ -5,34 +5,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 matplotlib.use("Agg")  # backend non graphique compatible Streamlit
 import seaborn as sns
+from utils.sidebar import kaggle_link
+
+kaggle_link()
 
 # Configuration de la page
 st.set_page_config(page_title="Analyse qualitative des recettes")
 
 # Chargement et préparation des données
 df_recipes, df_interactions = load_data()
-
-# Séparation des données nutritionnelles
-nutrition_split = (
-    df_recipes["nutrition"]
-    .str.strip("[]")
-    .str.replace(" ", "", regex=False)
-    .str.split(",", expand=True)
-)
-nutrition_split.columns = [
-    "Calories", 
-    "Total fat", 
-    "Sugar", 
-    "Sodium", 
-    "Protein", 
-    "Saturated fat", 
-    "Carbohydrates"
-]
-nutrition_split = nutrition_split.astype(float)
-
-# Fusion et nettoyage
-df_recipes = pd.concat([df_recipes, nutrition_split], axis=1)
-df_recipes.drop(columns=["nutrition"], inplace=True)
 
 # Répartition des apports nutritionnels
 st.title("Quelle est la répartition des apports nutritionnels par recette ?")
@@ -47,12 +28,23 @@ nutriments = [
     "Carbohydrates"
 ]
 
-st.dataframe(df_recipes[nutriments].describe().round(2))
+st.dataframe(df_recipes[["Calories", "Sugar", "Sodium"]].head(10))
+
+st.dataframe(
+    df_recipes[nutriments]
+        .describe()
+        .loc[["mean", "std", "min", "max"]]
+        .round(2)
+)
 
 # Visualisation
 st.subheader("Analyse détaillée par nutriment")
 
-selected_nutriment = st.selectbox("Choisissez un nutriment :", nutriments, index=0)
+selected_nutriment = st.radio(
+    "Choisissez un nutriment :",
+    nutriments,
+    horizontal=False
+)
 
 # Statistiques du nutriment sélectionné
 st.write(f"**Statistiques descriptives — {selected_nutriment}**")
