@@ -1,5 +1,8 @@
 from utils.data_loader import load_data
 import streamlit as st
+from utils.sidebar import kaggle_link
+
+kaggle_link()
 
 df_recipes, df_interactions = load_data()
 
