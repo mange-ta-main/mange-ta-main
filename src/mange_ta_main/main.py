@@ -1,12 +1,9 @@
-from utils.data_loader import load_data
 import streamlit as st
-<<<<<<< HEAD
-=======
 from utils.sidebar import kaggle_link
+from utils.data_loader import load_data
 
 kaggle_link()
 
->>>>>>> 2c66e48 (Added the kaggle link in the sidebar)
 df_recipes, df_interactions = load_data()
 
 # Display basic info
