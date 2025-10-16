@@ -45,7 +45,7 @@ st.markdown("""
 To get an initial overview, let's visualize the distribution of each nutritional variable.  
 For each one, we display a histogram of its **Percent Daily Value (PDV)**, meaning how much a single portion contributes to daily intake.
 
-A red dashed line indicates the **recommended PDV for a meal**.  
+A red dashed line indicates the **recommended PDV for a meal**.     
 If most recipes exceed this threshold, they likely contain excessive amounts of that nutrient.
 """)
 
