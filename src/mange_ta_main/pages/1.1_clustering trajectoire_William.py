@@ -15,12 +15,13 @@ from sklearn.cluster import KMeans
 df_recipes = pd.read_pickle("Data/RAW_recipes_local.pkl")
 df_interactions = pd.read_pickle("Data/RAW_interactions_local.pkl")
 
+
+
+
 # conversion du champ de dates
 df_recipes['submitted']=pd.to_datetime(df_recipes['submitted'],errors='coerce') # transforme submitted en une date lisible par panda (format datetime64)
 df = df_recipes[['submitted','contributor_id','id']]                    # garder que les données intéressantes
 df = df.sort_values('submitted')                                        # tri par date de soumission
-#df['contributor_id']=df['contributor_id'].astype(int).astype(str)       # on force contributor id en texte pour éviter les problème en cas de merge sur la colonne par exemple
-print(df.head(5))
 
 # création d'une matrice activité - agrégation par mois de l'activité par auteur
         # chaque ligne = un auteur
@@ -28,7 +29,7 @@ print(df.head(5))
         # chaque cellule = nombre de recettes publiées ce mois-là.
 
 def build_activity_matrix(df, freq="M"):
-    """Crée la matrice auteurs × période"""
+    """Crée la matrice auteurs x période"""
     df["month"] = df["submitted"].dt.to_period(freq).dt.to_timestamp()
     activity = (
         df.groupby(["contributor_id", "month"])["id"]
@@ -82,21 +83,21 @@ print("Nombre de clusters créés :", n_clusters_found)
 # étude des cluster 0 et 3
 cluster_3 = activity[activity['cluster']==3]
 cluster_0 = activity[activity['cluster']==0]
-contributor_cluster_3 = cluster_3.index.tolist()
-contributor_cluster_0 = cluster_0.index.tolist()
+cluster_1 = activity[activity['cluster']==1]
+cluster_2 = activity[activity['cluster']==2]
 
-print(f'nombre de contributeurs dans cluster_3:',len(contributor_cluster_3))
-print(f'nombre de contributeurs dans cluster_0:',len(contributor_cluster_0))
+print(f'nombre de contributeurs dans cluster_3:',cluster_3.shape[0])
+print(f'nombre de contributeurs dans cluster_1:',cluster_1.shape[0])
+print(f'nombre de contributeurs dans cluster_2:',cluster_2.shape[0])
+print(f'nombre de contributeurs dans cluster_0:',cluster_0.shape[0])
 
-id_cluster_3 = contributor_cluster_3[0]
-id_cluster_0 = contributor_cluster_0[0]
-
-nb_recettes_cluster_3 = df_recipes[df_recipes['contributor_id']==id_cluster_3].shape[0]
-nb_recettes_cluster_0 = df_recipes[df_recipes['contributor_id']==id_cluster_0].shape[0]
+nb_recettes_cluster_1 = df_recipes[df_recipes['contributor_id'].isin(cluster_1.index)].shape[0]
+nb_recettes_cluster_3 = df_recipes[df_recipes['contributor_id'].isin(cluster_3.index)].shape[0]
+nb_recettes_cluster_0 = df_recipes[df_recipes['contributor_id'].isin(cluster_0.index)].shape[0]
 
 print(f'nombre de recette de cluster 3: ',nb_recettes_cluster_3)
-print(f'nombre de recette de cluster 0: ',nb_recettes_cluster_0)
-
+print(f'nombre de recette de cluster 0: ',nb_recettes_cluster_0)    # beaucoup de recettes ont été publiées à l'ouverture du site et sont historiques
+print(f'nombre de recette de cluster 1: ',nb_recettes_cluster_1)
 
 
 # Etude avec un critère de réescense
@@ -129,7 +130,6 @@ super_coeur_reg = mois_actifs[mois_actifs >= 6].index.tolist()  # ex. ≥ 6 mois
 
 # extraction du super coeur
 df_super_coeur = df_recipes[df_recipes['contributor_id'].isin(super_coeur)]
-print(df_super_coeur.head(33))
 
 # Analyse univariée:
 # - l'analyse univariée de contributor_id a montré qu'il y avait un top_contributor(277) correspondant au percentil 99;
@@ -150,8 +150,9 @@ print(df_super_coeur.head(33))
 # Dans le cadre de la fidélisation des conributeurs, il faudrait récompenser les contributeurs des clusters 0 et 3 (réguliers et nouvelle vague)
 # nombre de contributeurs dans cluster_3: 33
 # nombre de contributeurs dans cluster_0: 5
-# nombre de recette de cluster 3:  343
-# nombre de recette de cluster 0:  2493
+# nombre de recette de cluster 3:  16923
+# nombre de recette de cluster 0:  10790
+# super coeur participe à 10% du site
 
 # Etude de rescence
 # en faisant une étude de rescence selon les critères suivants 
@@ -163,6 +164,13 @@ print(df_super_coeur.head(33))
 #   - % des contributeurs 0/3 inactifs depuis avant 2013 : 13.2%
 #   - Taille du super cœur (récents) : 33
 
+# combien de recettes pour super_coeur ?
+print(super_coeur)
+recettes_sp = df[df['contributor_id'].isin(super_coeur)]['id'].shape[0]
+print(recettes_sp)
+repartition_sp = round(recettes_sp/(df['id'].count())*100,2)
+print(repartition_sp)
 
+df_recipes.head()
 
 
