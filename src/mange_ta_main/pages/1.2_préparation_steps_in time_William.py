@@ -18,9 +18,12 @@ df = df.sort_values('month',ascending=True)
 df = df.drop('submitted',axis=1)
 print(df.head())
 # 
-mean_time =df.groupby('month')['minutes'].agg('mean')
+df_filtre = df[df['minutes']<1000]
+mean_time =df_filtre.groupby('month')['minutes'].agg('mean')
 moyenne_étape_mois = df.groupby('month')['n_steps'].agg('mean')
 print(df.head())
+
+
 
 
 fig,axes = plt.subplots(2,1)
@@ -32,7 +35,7 @@ axes[1].legend()
 plt.xlabel('mois')
 plt.legend()
 plt.show()
-#nb_recettes_mois = df.groupby('month')['id'].count()
+
 
 
 
