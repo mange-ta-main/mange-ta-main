@@ -28,12 +28,12 @@ def load_data():
     return recipes, interaction_data
 
 # To draw histograms
-def histogram(dataset, selected_column, bin_nb):
+def histogram(dataset, selected_column, title, bin_nb):
     # Histogram
     st.subheader("Histogram")
     fig, ax = plt.subplots()
     ax.hist(dataset[selected_column].dropna(), align='mid', bins=bin_nb, color='blue', edgecolor='black')
-    ax.set_title(f"Histogram of {selected_column}")
+    ax.set_title(title)
     ax.set_xlabel(selected_column)
     ax.set_ylabel("Frequence")
     st.pyplot(fig)
@@ -72,95 +72,112 @@ st.write(f"The number of evaluated recipes : {nb_recette_notees} is identical to
 st.subheader("1.2 Rating of recipes")
 st.write("With each evaluation, a rating from 1 to 5 is done. We built an histogram of the ratings to determine their distribution.")
 # Histogram of recipe ratings
-histogram(interaction_data, "rating", 5)
+histogram(interaction_data, "rating", "Number per rating", 5)
 # comment of recipe ratings
 st.write("We can see that the majority of the ratings are at level 5. This criterion is not a discriminating criterion for determining the popularity of a recipe.")
 
 # Analysis of the number of evaluation to determine the popularity
 st.subheader("1.3 Number of evaluation per recipe")
-st.write("In the next, we will determine the popularity by the number of evaluations per recipe.")
+st.write("In the next, we will determine the popularity by the number of evaluations per recipe."
+         "\n We will focus on the recipes that received more than 10 evaluations.")
 # Built of a dataset with the number of evalution by recipe
 evaluated_recipes = interaction_data["recipe_id"].value_counts().reset_index()
 evaluated_recipes.columns = ["recipe_id", "n_evaluated"]
 
-st.dataframe(evaluated_recipes.describe())
-histogram(evaluated_recipes, "n_evaluated", 30)
+evaluated_recipes_sup_10 = evaluated_recipes[evaluated_recipes["n_evaluated"] > 10]
+#st.dataframe(evaluated_recipes.describe())
+histogram(evaluated_recipes_sup_10, "n_evaluated", "Distribution for the recipes with more than 10 evaluations", 30)
+st.write(f"The median of the number of evaluations is at {evaluated_recipes_sup_10["n_evaluated"].median()}"
+         f"\n for the {evaluated_recipes["n_evaluated"].count()} recipes with more than 10 evaluations.")
+#st.dataframe(evaluated_recipes_sup_10.describe())
 
-st.dataframe(recipes.describe())
+#st.dataframe(evaluated_recipes.nlargest(10, "n_evaluated"))
 
-st.dataframe(evaluated_recipes.nlargest(10, "n_evaluated"))
+#nb_notation_threshold = 200
+#nb_high_scoring = (evaluated_recipes["n_evaluated"] > nb_notation_threshold).sum()
 
-nb_notation_threshold = 200
-nb_high_scoring = (evaluated_recipes["n_evaluated"] > nb_notation_threshold).sum()
-
-st.write(f"Nombre de recettes notées plus de {nb_notation_threshold} fois : {nb_high_scoring}")
+#st.write(f"Nombre de recettes notées plus de {nb_notation_threshold} fois : {nb_high_scoring}")
 
 nb_most_popular = 200
 #popular_recipes = evaluated_recipes[evaluated_recipes["n_evaluated"] > nb_notation_threshold]
 popular_recipes = evaluated_recipes.nlargest(nb_most_popular, "n_evaluated")
 
-histogram(popular_recipes, "n_evaluated", 30)
+histogram(popular_recipes, "n_evaluated", f"Distribution of evaluations for the {nb_most_popular} most popular recipes", 30)
 
-evaluated_recipes_sup_1 = evaluated_recipes[evaluated_recipes["n_evaluated"] > 1]
+#evaluated_recipes_sup_1 = evaluated_recipes[evaluated_recipes["n_evaluated"] > 1]
 evaluated_recipes_equal_1 = evaluated_recipes[evaluated_recipes["n_evaluated"] == 1]
-st.write(f"Number of recipes having more than one evaluation : {len(evaluated_recipes_sup_1)}")
-st.write(f"Number of recipes having only one evaluation : {len(evaluated_recipes_equal_1)}")
-histogram(evaluated_recipes_sup_1, "n_evaluated", 30)
+#st.write(f"Number of recipes having more than one evaluation : {len(evaluated_recipes_sup_10)}")
+#st.write(f"Number of recipes having only one evaluation : {len(evaluated_recipes_equal_1)}")
+#histogram(evaluated_recipes_sup_10, "n_evaluated", "Distribution of evaluations", 30)
 
 popular_recipes_merged = pd.merge(recipes, popular_recipes, left_on="id", right_on="recipe_id")
-st.dataframe(popular_recipes_merged.describe())
-st.dataframe(popular_recipes_merged.head())
+#st.dataframe(popular_recipes_merged.describe())
+#st.dataframe(popular_recipes_merged.head())
 
 
 # Les 2 bases complètes mergées
 recipes_evaluation_merged = pd.merge(recipes, evaluated_recipes, left_on="id", right_on="recipe_id")
 
-evaluated_recipes_sup_1 = recipes_evaluation_merged[recipes_evaluation_merged["n_evaluated"] > 1]
-evaluated_recipes_equal_1 = recipes_evaluation_merged[recipes_evaluation_merged["n_evaluated"] == 1]
-st.write(f"Number of recipes having more than one evaluation : {len(evaluated_recipes_sup_1)}")
-st.write(f"Number of recipes having only one evaluation : {len(evaluated_recipes_equal_1)}")
-histogram(evaluated_recipes_sup_1, "n_evaluated", 30)
-st.dataframe(evaluated_recipes_sup_1.describe())
-st.dataframe(evaluated_recipes_sup_1.head())
+evaluated_recipes_sup_10 = recipes_evaluation_merged[recipes_evaluation_merged["n_evaluated"] > 10]
+#evaluated_recipes_equal_1 = recipes_evaluation_merged[recipes_evaluation_merged["n_evaluated"] == 1]
+#st.write(f"Number of recipes having more than one evaluation : {len(evaluated_recipes_sup_1)}")
+#st.write(f"Number of recipes having only one evaluation : {len(evaluated_recipes_equal_1)}")
+#histogram(evaluated_recipes_sup_1, "n_evaluated", "Distribution of evaluations", 30)
+#st.dataframe(evaluated_recipes_sup_1.describe())
+#st.dataframe(evaluated_recipes_sup_1.head())
 #diff = evaluated_recipes_equal_1[evaluated_recipes_equal_1["contributor_id"] != evaluated_recipes_equal_1["user_id"]]
 #st.write(f"Number of recipes having a different user evaluation : {len(diff)}")
 
 # Créer le scatter plot
 plt.figure(figsize=(8, 5))
 
-fig2, ax = plt.subplots()
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["calories"], s=5, color="teal", label="Calories")
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["sugar"], s=5, color="red", alpha=0.7, label="Sugar")
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["total fat"], s=5, alpha=0.5, label="Fat")
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["saturated fat"], s=5, alpha=0.3, label="Saturated Fat")
+fig, ax = plt.subplots()
+ax.scatter(evaluated_recipes_sup_10["n_evaluated"], evaluated_recipes_sup_10["calories"], color="grey")
+ax.scatter(evaluated_recipes_sup_10["n_evaluated"], evaluated_recipes_sup_10["calories"], color="teal")
 ax.set_xlabel("Number of evaluations")
-ax.set_ylabel("calories")
-#ax.set_title(f"Relation entre nombre d'évaluations et calories pour les {nb_notation_threshold} plus populaires")
-ax.set_title(f"Relation entre nombre d'évaluations et calories pour les {nb_most_popular} plus populaires")
+ax.set_ylabel("Calories")
+ax.set_title("Relationship between number of evaluations and calories")
 ax.grid(True)
-ax.legend()
-st.pyplot(fig2)
-
-fig2, ax = plt.subplots()
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["calories"], color="grey")
-ax.scatter(evaluated_recipes_sup_1["n_evaluated"], evaluated_recipes_sup_1["calories"], color="teal")
-ax.set_xlabel("Number of evaluations")
-ax.set_ylabel("calories")
-ax.set_title("Relation entre nombre d'évaluations et calories")
-ax.grid(True)
-st.pyplot(fig2)
+#st.pyplot(fig)
 
 #Sans les x recettes les plus calorifiques
 
 #recipes_evaluation_merged_cleaned = recipes_evaluation_merged.drop(recipes_evaluation_merged.nlargest(100, "calories").index)
-recipes_evaluation_merged_cleaned = evaluated_recipes_sup_1.drop(evaluated_recipes_sup_1[evaluated_recipes_sup_1["calories"] > 5000].index)
+recipes_evaluation_merged_cleaned = evaluated_recipes_sup_10.drop(evaluated_recipes_sup_10[evaluated_recipes_sup_10["calories"] > 3000].index)
 
-fig2, ax = plt.subplots()
-ax.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["calories"], color="grey")
-ax.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged["calories"], color="teal")
-ax.set_xlabel("Number of evaluations")
-ax.set_ylabel("calories")
-ax.set_title("Relation entre nombre d'évaluations et calories")
-ax.grid(True)
+#plt.figure(figsize=(8, 5))
+fig2, ax2 = plt.subplots()
+ax2.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["calories"], color="grey", label="most popular")
+ax2.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged["calories"], color="teal", label="all")
+ax2.set_xlabel("Number of evaluations")
+ax2.set_ylabel("Calories")
+ax2.set_title("Relationship between number of evaluations and calories")
+ax2.grid(True)
 st.pyplot(fig2)
 
+plt.figure(figsize=(12, 8))
+dot_size = 10
+fig3, ax3 = plt.subplots()
+#ax3.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["calories"], s=dot_size, color="teal", label="Calories")
+ax3.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged["sugar"], s=dot_size, color="red", alpha=0.7, label="Sugar")
+ax3.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged["total fat"], s=dot_size, alpha=0.5, label="Fat")
+ax3.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged["saturated fat"], s=dot_size, alpha=0.3, label="Saturated Fat")
+ax3.set_xlabel("Number of evaluations")
+ax3.set_ylabel("in grams")
+ax3.set_title(f"Relationship between number of evaluations and sugar, fat for the {nb_most_popular} most popular recipes")
+ax3.grid(True)
+ax3.legend()
+st.pyplot(fig3)
+
+#plt.figure(figsize=(8, 5))
+fig4, ax4 = plt.subplots()
+#ax4.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["calories"], s=dot_size, color="teal", label="Calories")
+ax4.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["sugar"], s=dot_size, color="red", alpha=0.7, label="Sugar")
+ax4.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["total fat"], s=dot_size, alpha=0.5, label="Fat")
+ax4.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned["saturated fat"], s=dot_size, alpha=0.3, label="Saturated Fat")
+ax4.set_xlabel("Number of evaluations")
+ax4.set_ylabel("in grams")
+ax4.set_title(f"Relationship between number of evaluations and sugar, fat for the all recipes")
+ax4.grid(True)
+ax4.legend()
+st.pyplot(fig4)
