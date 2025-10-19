@@ -1,7 +1,7 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import logging
 from utils.data_loader import load_data
 from utils.logger import get_logger
 
@@ -9,37 +9,73 @@ st.header('Tags')
 title = 'Tags'
 logger = get_logger()
 
-@st.cache_data
-def get_processed_data(column: str) -> pd.Series:
+
+# class TagsController:
+#     _column = 'tags'
+#
+#     def __init__(self, recipes: pd.DataFrame):
+#         self.recipes = recipes
+#         self.tags_series = self._process_tags()
+
+
+def get_tags_series() -> pd.Series:
     recipes, _ = load_data()
-    series = recipes[column].dropna().apply(lambda x: x[1:-1].split(','))
-    series = series.explode()
-    series = series.value_counts()
+    series = recipes.set_index('id')['tags']\
+        .dropna()\
+        .apply(lambda x: x[1:-1].split(','))
     return series
 
-
 @st.cache_data
-def get_page_data(column: str, items_per_page: int, page_number: int) -> pd.Series:
-    series = get_processed_data(column)
+def get_tags_exploded_series() -> pd.Series:
+    series = get_tags_series()
+    series = series.explode().str.strip().str[1:-1].str.strip() # removing the ''
+    return series
 
-    if 'total_pages' not in st.session_state\
-            or 'total_items' not in st.session_state\
-            or 'items_per_page' not in st.session_state\
-            or st.session_state.items_per_page != items_per_page:
-        total_items = series.shape[0]
-        total_pages = (total_items + items_per_page - 1) // items_per_page
-        st.session_state.items_per_page = items_per_page
-        st.session_state.total_pages = total_pages
-        st.session_state.total_items = total_items
-    else:
-        total_pages = st.session_state.total_pages
-        total_items = st.session_state.total_items
+def get_tags_counts_paginated(
+    items_per_page: int,
+    page_number: int
+) -> tuple[pd.Series, int, int, int]:
+    series = get_tags_exploded_series()
+    series = series.value_counts()
+
+    total_items = series.shape[0]
+    total_pages = (total_items + items_per_page - 1) // items_per_page
     
     start_idx = (page_number - 1) * items_per_page
     end_idx = min(start_idx + items_per_page, total_items)
     
     # Get the subset of data for current page
-    return series.iloc[start_idx:end_idx], start_idx, end_idx
+    return series.iloc[start_idx:end_idx], start_idx, end_idx, total_pages
+
+def cluster_tags():
+    series = get_tags_exploded_series()
+   
+    # series[series[series == '60-minutes-or-less'].index]
+
+    # [series == '30-minutes-or-less']
+
+    unique_tags = series.unique()
+    cooccurence_matrix = np.zeros((len(unique_tags), len(unique_tags)))
+
+    cooccurence_df = pd.DataFrame(cooccurence_matrix, index=unique_tags, columns=unique_tags)
+
+    # cooccurence_df.loc['low-sodium'][['course', 'cuisine']] += 1
+    # cooccurence_df.loc['low-sodium']
+
+    logger.info(f'matrix shape: {cooccurence_matrix.shape}')
+    logger.info('computing Tag co-occurence matrix')
+    for idx, tag in enumerate(unique_tags):
+        recipes_with_tag = series[series == tag]
+        tags_for_recipes = series[recipes_with_tag.index]
+
+        unique_tags = tags_for_recipes.unique()
+        tag_counts = tags_for_recipes.value_counts()
+        # logger.info(f'Processing tag: {idx} - {tag} with {len(recipes_with_tag)} recipes and {len(tags_for_recipes)} sibling tags')
+        cooccurence_df.loc[tag, unique_tags] = tag_counts
+
+    logger.info('Tag co-occurence matrix computed')
+    cooccurence_df.to_csv('tags_coocurence.csv')
+    cooccurence_df
 
 
 def set_page_number(page_number: int):
@@ -48,20 +84,21 @@ def set_page_number(page_number: int):
 def shift_page_number(by: int):
     st.session_state.page_number += by
 
-def render():
-    
+def render_tags_bar_chart():
     # Initialize session state for page number if not exists
     if 'page_number' not in st.session_state:
         logger.info('Initializing page number in session state')
         st.session_state.page_number = 1
   
-    #
+
+    current_page_data, start_idx, end_idx, total_pages = get_tags_counts_paginated(
+        items_per_page=10,
+        page_number=st.session_state.page_number)
 
     logger.info(f'current page {st.session_state.page_number}')
     # Create navigation controls
     col1, col2, col3, col4, col5 = st.columns([1, 1, 2, 1, 1])
 
-    total_pages = 100 
     with col1:
         st.button(
             "⏮️ First",
@@ -99,10 +136,6 @@ def render():
         key='page_slider',
         on_change=lambda: set_page_number(st.session_state.page_slider))
 
-    current_page_data, start_idx, end_idx = get_page_data(
-        'tags',
-        items_per_page=10,
-        page_number=st.session_state.page_number)
 
     # Create the bar chart using plotly
     fig = px.bar(
@@ -113,30 +146,29 @@ def render():
         labels={'x': 'Count', 'y': 'Category'},
         text=current_page_data.values
     )
-    # 
-    # # Update layout for better appearance
-    # # fig.update_traces(texttemplate='%{text}', textposition='outside')
-    # # fig.update_layout(
-    # #     height=max(400, len(current_page_data) * 40),  # Dynamic height based on items
-    # #     showlegend=False,
-    # #     xaxis_title="Count",
-    # #     yaxis_title="Category",
-    # #     yaxis={'categoryorder': 'total ascending'}  # Keep order from series
-    # # )
+
+    # Update layout for better appearance
+    # fig.update_traces(texttemplate='%{text}', textposition='outside')
+    # fig.update_layout(
+    #     height=max(400, len(current_page_data) * 40),  # Dynamic height based on items
+    #     showlegend=False,
+    #     xaxis_title="Count",
+    #     yaxis_title="Category",
+    #     yaxis={'categoryorder': 'total ascending'}  # Keep order from series
+    # )
     # 
     # # Display the chart
     st.plotly_chart(fig)
-    # 
-    # # # Optional: Display the data in a table
-    # # with st.expander("View data table"):
-    # #     df_display = pd.DataFrame({
-    # #         'Category': current_page_data.index,
-    # #         'Count': current_page_data.values,
-    # #         'Percentage': (current_page_data.values / series.sum() * 100).round(2)
-    # #     })
-    # #     st.dataframe(df_display, use_container_width=True)
-    # 
-    # return current_page_data
+
+    # NOTE: tags: low-sodium, desserts, low-carb, healthy, low-cholesterol,
+    # NOTE: tags: low-chalorie, low-protein, low-saturated-fat, healthy2,
+    # NOTE: tags: comfort-food, low-fat, very-low-carbs, high-protein
+
+def render_tags_cluser():
+    cluster_tags()
 
 
-render()
+render_tags_bar_chart()
+render_tags_cluser()
+
+
