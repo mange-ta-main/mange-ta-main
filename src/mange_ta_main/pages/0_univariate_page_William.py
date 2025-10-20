@@ -13,35 +13,35 @@ df_interactions = pd.read_pickle("Data/RAW_interactions_local.pkl")
 
 
 # Essais avec Streamlit
-'''
-st.title('Visualisation des données')
-st.write('vous ne serez pas déçus')
 
-variables = recipes.columns.tolist()
-choix = st.selectbox('choisi ta variable pour dessiner l histogramme:',variables,key='choix')
-choix_numeriques = ['minutes','n_steps','n_ingredients','id','contributor_id']
+# st.title('Visualisation des données')
+# st.write('vous ne serez pas déçus')
 
-if  choix in choix_numeriques:
-    plt.hist(recipes[choix],edgecolor = 'black',bins=20)
-    plt.title(f"Histogramme de la variable {choix}")
-    plt.xlabel(choix)
-    plt.ylabel("Fréquence")
-    st.pyplot(plt)
-else: 
-    st.warning('on ne peut pas tracer de graphe pour cette variable')
+# variables = recipes.columns.tolist()
+# choix = st.selectbox('choisi ta variable pour dessiner l histogramme:',variables,key='choix')
+# choix_numeriques = ['minutes','n_steps','n_ingredients','id','contributor_id']
+
+# if  choix in choix_numeriques:
+#     plt.hist(recipes[choix],edgecolor = 'black',bins=20)
+#     plt.title(f"Histogramme de la variable {choix}")
+#     plt.xlabel(choix)
+#     plt.ylabel("Fréquence")
+#     st.pyplot(plt)
+# else: 
+#     st.warning('on ne peut pas tracer de graphe pour cette variable')
 
 
-# Calcul du nombre de données manquantes
-Missing_value = st.selectbox('choisi ta variable pour afficher le nombre de données manquantes:',variables,key='missing value')
-seuil_data_missing = 10
+# # Calcul du nombre de données manquantes
+# Missing_value = st.selectbox('choisi ta variable pour afficher le nombre de données manquantes:',variables,key='missing value')
+# seuil_data_missing = 10
 
-nb_val_manquante_i = recipes[Missing_value].isna().sum()
-if nb_val_manquante_i<seuil_data_missing:
-     st.write(f'Nombre de données manquantes: {nb_val_manquante_i}. Peu de données pour la variable **{Missing_value}** ({nb_val_manquante_i})')
-     # J'ai un doute sur le nombre de données manquantes et calcul fait. Le nombre me parait faible
-else:
-     st.write(f'il manque beaucoup de données pour la variable **{Missing_value}** ({nb_val_manquante_i})')
-'''
+# nb_val_manquante_i = recipes[Missing_value].isna().sum()
+# if nb_val_manquante_i<seuil_data_missing:
+#      st.write(f'Nombre de données manquantes: {nb_val_manquante_i}. Peu de données pour la variable **{Missing_value}** ({nb_val_manquante_i})')
+#      # J'ai un doute sur le nombre de données manquantes et calcul fait. Le nombre me parait faible
+# else:
+#      st.write(f'il manque beaucoup de données pour la variable **{Missing_value}** ({nb_val_manquante_i})')
+
 
 # Cas à étudier :
 # - quels sont les contributeurs qui font vivrent la plateforme (et donc ceux qu'il faudra cibler et encourage à améliorer les recettes dans une démarches de santé publique)
