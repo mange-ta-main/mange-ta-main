@@ -2,7 +2,7 @@ import numpy as np
 import streamlit as st
 import pandas as pd
 import matplotlib
-matplotlib.use('MacOSX')   # backend natif pour macOS
+matplotlib.use('Agg')   # backend natif pour macOS
 import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
