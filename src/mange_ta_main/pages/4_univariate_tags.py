@@ -26,6 +26,7 @@ def get_tags_series() -> pd.Series:
     series = series.explode().str.strip().str[1:-1].str.strip() # removing the ''
     return series
 
+
 @st.cache_data
 def get_tags_exploded_series() -> pd.Series:
     series = get_tags_series()
@@ -89,41 +90,11 @@ def get_tags_counts_paginated(
     return cluster_labels, tag_clusters
 
 
-# def cluster_tags():
-#     tags = get_tags_exploded_series()
-#     _, reviews = load_data()
-#
-#     logger.info(reviews.columns)
-
 def cluster_tags():
-    series = get_tags_exploded_series()
-   
-    # series[series[series == '60-minutes-or-less'].index]
+    tags = get_tags_exploded_series()
+    _, reviews = load_data()
 
-    # [series == '30-minutes-or-less']
-
-    unique_tags = series.unique()
-    cooccurence_matrix = np.zeros((len(unique_tags), len(unique_tags)))
-
-    cooccurence_df = pd.DataFrame(cooccurence_matrix, index=unique_tags, columns=unique_tags)
-
-    # cooccurence_df.loc['low-sodium'][['course', 'cuisine']] += 1
-    # cooccurence_df.loc['low-sodium']
-
-    logger.info(f'matrix shape: {cooccurence_matrix.shape}')
-    logger.info('computing Tag co-occurence matrix')
-    for idx, tag in enumerate(unique_tags):
-        recipes_with_tag = series[series == tag]
-        tags_for_recipes = series[recipes_with_tag.index]
-
-        unique_tags = tags_for_recipes.unique()
-        tag_counts = tags_for_recipes.value_counts()
-        # logger.info(f'Processing tag: {idx} - {tag} with {len(recipes_with_tag)} recipes and {len(tags_for_recipes)} sibling tags')
-        cooccurence_df.loc[tag, unique_tags] = tag_counts
-
-    logger.info('Tag co-occurence matrix computed')
-    cooccurence_df.to_csv('tags_coocurence.csv')
-    cooccurence_df
+    logger.info(reviews.columns)
 
 
 def set_page_number(page_number: int):
@@ -133,16 +104,6 @@ def set_page_number(page_number: int):
 def shift_page_number(by: int):
     st.session_state.page_number += by
 
-def render_tags_bar_chart():
-    # Initialize session state for page number if not exists
-    if 'page_number' not in st.session_state:
-        logger.info('Initializing page number in session state')
-        st.session_state.page_number = 1
-  
-
-    current_page_data, start_idx, end_idx, total_pages = get_tags_counts_paginated(
-        items_per_page=10,
-        page_number=st.session_state.page_number)
 
 def render_tags_bar_chart():
     # Initialize session state for page number if not exists
@@ -153,7 +114,6 @@ def render_tags_bar_chart():
     current_page_data, start_idx, end_idx, total_pages = get_tags_counts_paginated(
         items_per_page=10, page_number=st.session_state.page_number
     )
-
     logger.info(f"current page {st.session_state.page_number}")
     # Create navigation controls
     col1, col2, col3, col4, col5 = st.columns([1, 1, 2, 1, 1])
@@ -225,7 +185,6 @@ def render_tags_bar_chart():
     # # Display the chart
     st.plotly_chart(fig)
 
-
 # def render_tags_pie_chart():
 #     # Create pie chart
 #     series = get_tags_exploded_series()
@@ -238,14 +197,21 @@ def render_tags_bar_chart():
 #     st.plotly_chart(fig)
 
 
-render_tags_bar_chart()
 # render_tags_pie_chart()
     # NOTE: tags: low-sodium, desserts, low-carb, healthy, low-cholesterol,
     # NOTE: tags: low-chalorie, low-protein, low-saturated-fat, healthy2,
     # NOTE: tags: comfort-food, low-fat, very-low-carbs, high-protein
 
-def render_tags_cluser():
-    cluster_tags()
+# def render_tags_pie_chart():
+#     # Create pie chart
+#     series = get_tags_exploded_series()
+#     series = series.value_counts()
+#     fig = px.pie(values=series.values,
+#                  names=series.index,
+#                  title='Tags distribution')
+#
+#     # Display in Streamlit
+#     st.plotly_chart(fig)
 
 
 render_tags_bar_chart()
