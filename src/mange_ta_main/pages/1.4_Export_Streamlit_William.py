@@ -14,12 +14,6 @@ if SRC_PATH not in sys.path:
 
 from mange_ta_main.pages.synthese_William import summarize_temporal_clustering
 
-
-
-
-
-
-
 # ==========================================================
 #                       CONFIG PAGE
 # ==========================================================
