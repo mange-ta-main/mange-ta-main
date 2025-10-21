@@ -14,3 +14,5 @@ def get_logger():
         )
         logger.addHandler(handler)
     return logger
+
+logger = get_logger()
