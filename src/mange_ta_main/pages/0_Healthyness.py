@@ -13,6 +13,7 @@ from adjustText import adjust_text
 
 from utils.sidebar import kaggle_link
 from utils.data_loader import load_data
+from utils.logger import logger
 from assets import CAMENBEAR
 
 matplotlib.use("Agg")
@@ -24,9 +25,13 @@ st.set_page_config(page_title="Qualitative analysis of recipes")
 kaggle_link()
 st.sidebar.image(CAMENBEAR, width="stretch")
 
+logger.info("Starting healthiness analysis page...")
+
+# WARN: clustering is not being cached properly, leading to longer load times
 
 @st.cache_data
 def preprocess_data() -> pd.DataFrame: 
+    logger.info("Preprocessing nutritional data...")
     df_recipes, df_interactions = load_data()
     df_recipes["Calories_pdv"] = (
         df_recipes["Calories"] / 2000
@@ -75,7 +80,7 @@ recommended_values = {
 }
 
 selected_nutriment = st.radio(
-    label="", options=nutriments, horizontal=True, label_visibility="collapsed"
+    label="choose nutrient", options=nutriments, horizontal=True, label_visibility="collapsed"
 )
 
 fig, ax = plt.subplots(figsize=(7, 4))
@@ -122,7 +127,8 @@ which maximizes variance and allows for a clear visualization of the clusters.
 
 
 @st.cache_data
-def run_clustering(df_recipes: pd.DataFrame):
+def run_clustering():
+
     features = [
         "Calories_pdv",
         "Total fat",
@@ -136,8 +142,11 @@ def run_clustering(df_recipes: pd.DataFrame):
     def clean_tags(tag_str):
         if pd.isna(tag_str):
             return []
-        tag_str = tag_str.strip("[]").replace("'", "").replace('"', "")
-        tags = [t.strip().lower() for t in tag_str.split(",") if t.strip()]
+        tags = (tag_str.strip("[]")
+                   .replace("'", "")
+                   .replace('"', "")
+                   .replace(' ', '')
+                   .split(','))
         ignore = {
             "equipment",
             "30-minutes-or-less",
@@ -156,7 +165,7 @@ def run_clustering(df_recipes: pd.DataFrame):
         tags = [t for t in tags if t not in ignore]
         return tags
 
-    df_recipes["clean_tags"] = df_recipes["tags"].apply(clean_tags)
+    df_recipes["clean_tags"] = pd.Series(df_recipes["tags"].apply(clean_tags))
 
     X = df_recipes[features].fillna(0)
     scaler = StandardScaler()
@@ -198,7 +207,7 @@ def compute_tag_summary(df, top_n=3):
 
 # --- Load and process data ---
 df_recipes = preprocess_data()
-df_recipes, cluster_profiles = run_clustering(df_recipes)
+df_recipes, cluster_profiles = run_clustering()
 tag_summary = compute_tag_summary(df_recipes, top_n=3)
 
 # --- PCA visualization ---
