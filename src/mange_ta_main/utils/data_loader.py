@@ -1,6 +1,6 @@
 import pandas as pd
-from pathlib import Path
 import streamlit as st
+from pathlib import Path
 
 DATA_DIR = Path("Data")
 RECIPES_PICKLE_FILE = DATA_DIR / "RAW_recipes_local.pkl"
