@@ -1,50 +1,40 @@
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
+import plotly.express as px
+from utils.data_loader import load_data, nutrition_categories
 
 # Remove access to utils library due to echec to generate Pickle files with import_data.py
 #from mange_ta_main.utils.data_loader import load_data
 
 # Change data extension to catch csv files and not pickle ones
-DATA_DIR = Path("Data")
-RECIPES_CSV_FILE = DATA_DIR / "RAW_recipes_local.csv"
-INTERACTIONS_CSV_FILE = DATA_DIR / "RAW_interactions_local.csv"
 
 # copy from utils file and change pickle to csv to keep the load_data() function
-@st.cache_data
-def load_data():
-    recipes, interaction_data = pd.read_csv(RECIPES_CSV_FILE), pd.read_csv(INTERACTIONS_CSV_FILE)
-    nutrition_split = recipes["nutrition"].str.strip("[]").str.split(",", expand=True)
-    nutrition_split.columns = [
-        "calories", 
-        "total fat", 
-        "sugar", 
-        "sodium", 
-        "protein", 
-        "saturated fat", 
-        "carbohydrates"
-    ]
-    nutrition_split = nutrition_split.astype(float)
-    recipes = pd.concat([recipes, nutrition_split], axis=1)
-    return recipes, interaction_data
 
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):
     # Histogram
     st.subheader("Histogram")
-    fig, ax = plt.subplots(figsize=(3, 2))
-    ax.hist(dataset[selected_column].dropna(), align='mid', bins=bin_nb, color='teal') #, edgecolor='black')
-    ax.set_title(title)
-    ax.set_xlabel(selected_column)
-    ax.set_ylabel("Frequence")
-    st.pyplot(fig)
+    # fig, ax = plt.subplots(figsize=(3, 2))
+    # ax.hist(dataset[selected_column].dropna(), align='mid', bins=bin_nb, color='teal') #, edgecolor='black')
+    # ax.set_title(title)
+    # ax.set_xlabel(selected_column)
+    # ax.set_ylabel("Frequence")
+    fig = px.histogram(
+        dataset,
+        x=selected_column,
+        nbins=bin_nb,
+        labels={'x': selected_column, 'y': "Frequence"},
+        title=title)
+
+    st.plotly_chart(fig)
 
 # Load data files
 recipes, interaction_data = load_data()
 
 # Page title
-st.set_page_config(page_title="Bivariate Eric")
+st.set_page_config(page_title="Popular Recipe Analysis", layout="wide")
 st.title("Popular Recipe Analysis")
 # Set subject of the page
 st.write("Following the request from the Health Ministry Agency, we need to know if the most popular recipes have a nutritional score at the recommended level")
@@ -53,21 +43,23 @@ st.write("Following the request from the Health Ministry Agency, we need to know
 st.header("1 Interaction dataset analysis")
 st.subheader("1.1 Interactions Dataset")
 # Interaction dataset description
-st.write("In this dataset, there are five attributs "
-         "\n- user_id attribut : a unique ID for each contributor. The same ID is used in the Recipe dataset to indicate who posted the recipe"
-         "\n- recipe_id attribut : ID of the evaluated recipe"
-         "\n- date attribut : date of the recipe evaluation"
-         "\n- rating attribut : level of the evaluation from 1 to 5. 5 is the best evaluation"
-         "\n- review attribut : comment of the evaluation")
+st.markdown("""
+         In this dataset, there are five attributs
+         - user_id attribut : a unique ID for each contributor. The same ID is used in the Recipe dataset to indicate who posted the recipe
+         - recipe_id attribut : ID of the evaluated recipe
+         - date attribut : date of the recipe evaluation
+         - rating attribut : level of the evaluation from 1 to 5. 5 is the best evaluation
+         - review attribut : comment of the evaluation""")
+
 st.write("Example for the 5 fist lines")
 st.dataframe(interaction_data.head())
 
 # Determination of the number of evaluated recipes
 nb_recette_notees = interaction_data["recipe_id"].nunique()
 nb_recette_recipe = recipes["id"].count()
-st.write(f"The number of evaluated recipes : {nb_recette_notees} is identical to the number of recipes in the recipes dataset : {nb_recette_recipe}."
-         "\n With others words, all recipes are evaluated at least one time."
-         " We will see later, for the recipe with only one evaluation, it is a self evaluation")
+st.markdown(f"""The number of evaluated recipes : {nb_recette_notees} is identical to the number of recipes in the recipes dataset : {nb_recette_recipe}.
+        With others words, all recipes are evaluated at least one time.
+        We will see later, for the recipe with only one evaluation, it is a self evaluation""")
 
 # Analysis of the attribut : Rating to determine the popularity
 st.subheader("1.2 Rating of recipes")
@@ -108,17 +100,8 @@ recipes_evaluation_merged = pd.merge(recipes, evaluated_recipes, left_on="id", r
 # Dataset with only the number of evaluations higher than 10
 evaluated_recipes_sup_10 = recipes_evaluation_merged[recipes_evaluation_merged["n_evaluated"] > 10]
 # Cleaning recipes with a number of calories higher than 10000
-recipes_evaluation_merged_cleaned = evaluated_recipes_sup_10.drop(evaluated_recipes_sup_10[evaluated_recipes_sup_10["calories"] > 10000].index)
+recipes_evaluation_merged_cleaned = evaluated_recipes_sup_10.drop(evaluated_recipes_sup_10[evaluated_recipes_sup_10["Calories"] > 10000].index)
 # List of nutritional parameters
-nutrition_categories = [
-        "calories", 
-        "total fat", 
-        "sugar", 
-        "sodium", 
-        "protein", 
-        "saturated fat", 
-        "carbohydrates"
-    ]
 # Define limits for the x cursors
 min_val = int(recipes_evaluation_merged_cleaned["n_evaluated"].min())
 max_val = int(recipes_evaluation_merged_cleaned["n_evaluated"].max())
