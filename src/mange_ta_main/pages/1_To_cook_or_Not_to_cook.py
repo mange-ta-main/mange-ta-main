@@ -1,11 +1,12 @@
-import streamlit as st
-from utils.data_loader import load_data
+import calendar
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
-import calendar
-
+import streamlit as st
+from utils.data_loader import load_data
+from utils.logger import logger
+from assets import EATING_AT_RESTAURANT, JUNK_FOOD
 
 st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
@@ -14,16 +15,16 @@ st.set_page_config(page_title="Weekday frequencies", layout="wide")
 # Retrieve and prepare data
 # =========================================================================
 
-# Load data
-df_recipes = pd.read_pickle("Data/RAW_recipes_local.pkl")
+df_recipes, _ = load_data()
+# logger.info(f'sdfdsf {df_recipes.columns}')
 
 # Retrieve targeted feature
-feat_name = 'date'
+feat_name = 'submitted'
 df = df_recipes[[feat_name]]
 df_dates = df.copy()
 
 # Converting from strings to datetime format
-df_dates["date"] = pd.to_datetime(df_dates["date"], errors="coerce")
+df_dates["date"] = pd.to_datetime(df_dates[feat_name], errors="coerce")
 df_dates = df_dates.dropna(subset=["date"])
 
 df_dates["year"] = df_dates["date"].dt.year
@@ -43,19 +44,17 @@ col1, col2, col3 = st.columns([1, 2, 1])
 # ----------------------------------------
 # Picture
 # ----------------------------------------
-fig_1 = "src/mange_ta_main/assets/eating_at_restaurant.jpg"
 # Centered image
 with col2:
-    st.image(fig_1, width = 400)
+    st.image(EATING_AT_RESTAURANT, width = 400)
 # ----------------------------------------
 
 
 # ----------------------------------------
 # Picture
 # ----------------------------------------
-fig_2 = "src/mange_ta_main/assets/junk_food.jpg"
 with col2:
-    st.image(fig_2, width=400)
+    st.image(JUNK_FOOD, width=400)
 # ----------------------------------------
 
 
