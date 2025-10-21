@@ -1,18 +1,20 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
+
 # Remove access to utils library due to echec to generate Pickle files with import_data.py
 #from mange_ta_main.utils.data_loader import load_data
 
 # Change data extension to catch csv files and not pickle ones
-DATA_DIR = "Data"
-RECIPES_PICKLE_FILE = DATA_DIR + "\RAW_recipes_local.csv"
-INTERACTIONS_PICKLE_FILE = DATA_DIR + "\RAW_interactions_local.csv"
+DATA_DIR = Path("Data")
+RECIPES_CSV_FILE = DATA_DIR / "RAW_recipes_local.csv"
+INTERACTIONS_CSV_FILE = DATA_DIR / "RAW_interactions_local.csv"
 
 # copy from utils file and change pickle to csv to keep the load_data() function
 @st.cache_data
 def load_data():
-    recipes, interaction_data = pd.read_csv(RECIPES_PICKLE_FILE), pd.read_csv(INTERACTIONS_PICKLE_FILE)
+    recipes, interaction_data = pd.read_csv(RECIPES_CSV_FILE), pd.read_csv(INTERACTIONS_CSV_FILE)
     nutrition_split = recipes["nutrition"].str.strip("[]").str.split(",", expand=True)
     nutrition_split.columns = [
         "calories", 
