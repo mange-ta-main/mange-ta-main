@@ -6,8 +6,19 @@ DATA_DIR = Path("Data")
 RECIPES_PICKLE_FILE = DATA_DIR / "RAW_recipes_local.pkl"
 INTERACTIONS_PICKLE_FILE = DATA_DIR / "RAW_interactions_local.pkl"
 
+nutrition_categories = [
+    "Calories",
+    "Total fat",
+    "Sugar",
+    "Sodium",
+    "Protein",
+    "Saturated fat",
+    "Carbohydrates",
+]
+
+
 @st.cache_data
-def load_data() -> tuple[pd.DataFrame | pd.Series, pd.DataFrame | pd.Series]:
+def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     df_recipes = pd.read_pickle(RECIPES_PICKLE_FILE.resolve())
     # Séparation des données nutritionnelles
     nutrition_split = (
@@ -16,15 +27,7 @@ def load_data() -> tuple[pd.DataFrame | pd.Series, pd.DataFrame | pd.Series]:
         .str.replace(" ", "", regex=False)
         .str.split(",", expand=True)
     )
-    nutrition_split.columns = [
-        "Calories", 
-        "Total fat", 
-        "Sugar", 
-        "Sodium", 
-        "Protein", 
-        "Saturated fat", 
-        "Carbohydrates"
-    ]
+    nutrition_split.columns = nutrition_categories
     nutrition_split = nutrition_split.astype(float)
     # Fusion et nettoyage
     df_recipes = pd.concat([df_recipes, nutrition_split], axis=1)
