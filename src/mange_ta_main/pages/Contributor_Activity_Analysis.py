@@ -1,5 +1,5 @@
 # ==========================================================
-#               📊 CONTRIBUTOR ANALYSIS
+#               📊 CONTRIBUTOR ANALYSIS (Simplified Interactive)
 # ==========================================================
 import os
 import sys
@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 
 # ==========================================================
@@ -44,6 +44,15 @@ allowing targeted interventions for maximum impact in a public health context.
 
 
 # ==========================================================
+#                SIDEBAR CONTROLS
+# ==========================================================
+st.sidebar.header("⚙️ Clustering Parameters")
+
+# --- Clustering parameter (only one kept) ---
+n_clusters = st.sidebar.slider("Number of clusters", 2, 8, 3)
+
+
+# ==========================================================
 #                 PART 1: LORENZ CURVE
 # ==========================================================
 st.subheader("1️⃣ Contribution Concentration — Lorenz Curve")
@@ -52,6 +61,7 @@ nb_recipes_contributor = df_recipes['contributor_id'].value_counts()
 total_recipes = nb_recipes_contributor.sum()
 total_contributors = nb_recipes_contributor.size
 
+# Fixed 10% threshold (no interactivity)
 k_top = max(1, int(np.floor(0.10 * total_contributors)))
 share_top10 = nb_recipes_contributor.sort_values(ascending=False).head(k_top).sum() / total_recipes
 
@@ -62,11 +72,13 @@ cum_contributors = np.arange(1, len(counts_sorted) + 1) / len(counts_sorted)
 lorenz_x = np.insert(cum_contributors, 0, 0)
 lorenz_y = np.insert(cum_recipes, 0, 0)
 
+# Display metrics
 col1, col2, col3 = st.columns(3)
 col1.metric("Number of contributors", f"{total_contributors:,}".replace(",", " "))
 col2.metric("Number of recipes", f"{total_recipes:,}".replace(",", " "))
 col3.metric("Share of recipes (Top 10%)", f"{share_top10*100:.1f}%")
 
+# Plot Lorenz
 fig, ax = plt.subplots(figsize=(7, 5))
 ax.plot(lorenz_x, lorenz_y, linewidth=2)
 ax.plot([0, 1], [0, 1], linestyle="--")
@@ -78,10 +90,9 @@ st.pyplot(fig)
 
 st.markdown(f"""
 **Analysis:**
-- The blue curve shows the **actual distribution of contributions**, while the diagonal line represents **perfect equality**.  
-- The further the Lorenz curve deviates from the diagonal, the stronger the concentration.  
-- Here, **10% of contributors produce about 70% of the recipes**.  
-  This highly active subset forms the focus of the next analysis.
+- The blue curve shows the **actual distribution of contributions**, while the diagonal represents **perfect equality**.  
+- The farther the Lorenz curve is from the diagonal, the stronger the concentration.  
+- Here, **10% of contributors produce approximately {share_top10*100:.1f}% of all recipes**.  
 """)
 
 
@@ -118,8 +129,9 @@ def prepare_activity_data(df, top_n=277):
 
 
 def perform_activity_clustering(activity, n_clusters=3, window=3, random_state=42):
+    """Perform KMeans clustering using Z-score normalization."""
     smoothed = activity.rolling(window=window, axis=1, min_periods=1).mean()
-    X = MinMaxScaler().fit_transform(smoothed)
+    X = StandardScaler().fit_transform(smoothed)  # Z-score normalization
 
     km = KMeans(n_clusters=n_clusters, random_state=random_state)
     labels = km.fit_predict(X)
@@ -190,6 +202,7 @@ def identify_super_core(df_recipes,
 
 
 def summarize_temporal_clustering(df_recipes, top_n=277, n_clusters=3):
+    """Full pipeline: prepare data, cluster, and identify super core contributors."""
     df = df_recipes.copy()
     df["submitted"] = pd.to_datetime(df["submitted"], errors="coerce")
     df = df.sort_values("submitted")
@@ -215,7 +228,7 @@ def summarize_temporal_clustering(df_recipes, top_n=277, n_clusters=3):
 #               PIPELINE EXECUTION
 # ==========================================================
 with st.spinner("Computing activity clusters..."):
-    results = summarize_temporal_clustering(df_recipes)
+    results = summarize_temporal_clustering(df_recipes, n_clusters=n_clusters)
 
 activity = results["activity_clustered"]
 model = results["cluster_model"]
@@ -233,7 +246,7 @@ for c in range(results["n_clusters"]):
     ax.plot(activity_cols, model.cluster_centers_[c], label=f"Cluster {c}")
 ax.set_title("Average Normalized Activity Evolution (per cluster)")
 ax.set_xlabel("Month")
-ax.set_ylabel("Normalized Activity Index (0–1)")
+ax.set_ylabel("Z-Score Activity Index")
 ax.legend()
 ax.grid(alpha=0.3)
 st.pyplot(fig)
@@ -245,19 +258,14 @@ st.pyplot(fig)
 st.header("Super Core Contributor Analysis")
 
 """
-The normalized activity index represents each contributor’s relative participation dynamics — 
-it indicates how much their activity at a given time deviates from their usual average.
+The Z-Score activity index represents each contributor’s relative participation dynamics — 
+it shows how much their activity at a given time deviates from their own average.
 
-For example, a score of +1 means a contributor is publishing roughly one standard deviation 
-above their normal level — a significant increase in output. Conversely, −1 indicates lower-than-average activity.
+Cluster selection: an initial 4-cluster setup revealed one inactive cluster, 
+so we retained **3 clusters** for interpretability.
 
-By linking this index to actual recipe counts, each variation can be interpreted 
-as a tangible change in contributions (e.g., from 5 to 8 recipes per month for +1.5).
-
-Thus, these activity curves are not abstract measures: 
-they reflect real shifts in platform participation.
-
-Cluster selection: an initial 4-cluster test showed one inactive cluster, so we kept 3.  
-Temporal analysis reveals that the platform’s peak occurred between 2002–2015, 
-with two dominant groups of contributors: early (2002–2008) and later (2008–2015).
+Temporal analysis suggests the platform peaked between **2002 and 2015**, 
+with two dominant contributor groups:
+- Early active users (2002–2008)
+- Later active users (2008–2015)
 """
