@@ -6,20 +6,20 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
+from utils.data_loader import load_data
+from utils.logger import logger
 
 # ==========================================================
 #             DATA LOADING
 # ==========================================================
-@st.cache_data
-def load_data():
-    """Load local data from the Data/ folder"""
-    return pd.read_pickle("Data/RAW_recipes_local.pkl")
 
-df_recipes = load_data()
+df_recipes, _ = load_data()
 
 
 # ==========================================================
@@ -69,8 +69,6 @@ share_top10 = nb_recipes_contributor.sort_values(ascending=False).head(k_top).su
 counts_sorted = np.sort(nb_recipes_contributor.values)
 cum_recipes = np.cumsum(counts_sorted) / counts_sorted.sum()
 cum_contributors = np.arange(1, len(counts_sorted) + 1) / len(counts_sorted)
-lorenz_x = np.insert(cum_contributors, 0, 0)
-lorenz_y = np.insert(cum_recipes, 0, 0)
 
 # Display metrics
 col1, col2, col3 = st.columns(3)
@@ -79,14 +77,27 @@ col2.metric("Number of recipes", f"{total_recipes:,}".replace(",", " "))
 col3.metric("Share of recipes (Top 10%)", f"{share_top10*100:.1f}%")
 
 # Plot Lorenz
-fig, ax = plt.subplots(figsize=(7, 5))
-ax.plot(lorenz_x, lorenz_y, linewidth=2)
-ax.plot([0, 1], [0, 1], linestyle="--")
-ax.set_xlabel("Cumulative share of contributors")
-ax.set_ylabel("Cumulative share of recipes")
-ax.set_title("Lorenz Curve — Contribution Inequality")
-ax.grid(True, alpha=0.3)
-st.pyplot(fig)
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=cum_contributors,
+    y=cum_recipes,
+    name="Contribution Distribution",))
+fig.add_trace(go.Scatter(
+    x=[0,1],
+    y=[0,1],
+    name="Perfect Equality",
+    line={
+        "color": "orange",
+        "width":1,
+        "dash": "dash"
+    }))
+
+fig.update_layout(
+    title="Lorenz Curve — Contribution Inequality",
+    xaxis_title="Cumulative share of contributors",
+    yaxis_title="Cumulative share of recipes")
+
+st.plotly_chart(fig)
 
 st.markdown(f"""
 **Analysis:**
@@ -241,16 +252,22 @@ super_core_share = results["super_core_recipe_share"]
 st.subheader("2️⃣ Average Normalized Activity Over Time")
 
 activity_cols = activity.columns[:-1]  # exclude cluster column
-fig, ax = plt.subplots(figsize=(10, 5))
-for c in range(results["n_clusters"]):
-    ax.plot(activity_cols, model.cluster_centers_[c], label=f"Cluster {c}")
-ax.set_title("Average Normalized Activity Evolution (per cluster)")
-ax.set_xlabel("Month")
-ax.set_ylabel("Z-Score Activity Index")
-ax.legend()
-ax.grid(alpha=0.3)
-st.pyplot(fig)
+fig = go.Figure()
 
+for c in range(results["n_clusters"]):
+    fig.add_trace(
+        go.Scatter(
+            x=activity_cols,
+            y=model.cluster_centers_[c],
+            name=f"Cluster {c}")
+    )
+
+fig.update_layout(
+    title="Average Normalized Activity Evolution (per cluster)",
+    xaxis_title="Month",
+    yaxis_title="Z-Score Activity Index")
+
+st.plotly_chart(fig)
 
 # ==========================================================
 #               SUPER CORE ANALYSIS
