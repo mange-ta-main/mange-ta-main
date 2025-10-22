@@ -111,7 +111,7 @@ st.markdown(f"""
 #                 PART 2: CLUSTERING & SUPER CORE
 # ==========================================================
 
-def build_activity_matrix(df, freq="M"):
+def build_activity_matrix(df: pd.DataFrame, freq="M") -> pd.DataFrame:
     df = df.copy()
     df["submitted"] = pd.to_datetime(df["submitted"], errors="coerce")
     df["month"] = df["submitted"].dt.to_period(freq).dt.to_timestamp()
@@ -123,7 +123,7 @@ def build_activity_matrix(df, freq="M"):
     )
 
 
-def filter_top_contributors(df, top_n=277):
+def filter_top_contributors(df: pd.DataFrame, top_n=277) -> pd.DataFrame:
     top_authors = (
         df.groupby("contributor_id")["id"]
           .nunique()
@@ -134,14 +134,15 @@ def filter_top_contributors(df, top_n=277):
     return df[df["contributor_id"].isin(top_authors)]
 
 
-def prepare_activity_data(df, top_n=277):
+def prepare_activity_data(df: pd.DataFrame, top_n=277) -> pd.DataFrame:
     df_top = filter_top_contributors(df, top_n)
     return build_activity_matrix(df_top)
 
 
 def perform_activity_clustering(activity, n_clusters=3, window=3, random_state=42):
     """Perform KMeans clustering using Z-score normalization."""
-    smoothed = activity.rolling(window=window, axis=1, min_periods=1).mean()
+    smoothed = activity.T.rolling(window=window, min_periods=1).mean().T
+
     X = StandardScaler().fit_transform(smoothed)  # Z-score normalization
 
     km = KMeans(n_clusters=n_clusters, random_state=random_state)
@@ -212,8 +213,9 @@ def identify_super_core(df_recipes,
     }
 
 
-def summarize_temporal_clustering(df_recipes, top_n=277, n_clusters=3):
+def summarize_temporal_clustering(df_recipes: pd.DataFrame, top_n=277, n_clusters=3):
     """Full pipeline: prepare data, cluster, and identify super core contributors."""
+
     df = df_recipes.copy()
     df["submitted"] = pd.to_datetime(df["submitted"], errors="coerce")
     df = df.sort_values("submitted")
