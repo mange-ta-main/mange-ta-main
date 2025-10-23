@@ -15,7 +15,7 @@ st.set_page_config(page_title="Weekday frequencies", layout="wide")
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
-#df_recipes, _ = load_data()
+# df_recipes, _ = load_data()
 df_recipes = pd.read_csv("Data/RAW_recipes.csv")
 
 # logger.info(f'sdfdsf {df_recipes.columns}')
@@ -48,7 +48,7 @@ st.subheader('Are people eating more outside, *e.g.* in restaurants, cafés, or 
 # Centered image
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image(EATING_AT_RESTAURANT, width = 400)
+    st.image(EATING_AT_RESTAURANT, width=400)
 # ----------------------------------------
 
 st.markdown('''Who doesn't love eating? :yum:. The answer to that question is pretty obvious,
@@ -65,7 +65,7 @@ They can purchase food via mobile applications and get delivered to their house 
 # Centered image
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image(FOOD_DELIVERY, width = 800)
+    st.image(FOOD_DELIVERY, width=800)
 # ----------------------------------------
 
 st.markdown('''
@@ -131,7 +131,7 @@ with col2:
     ''')
 
 st.markdown('''Conversely,''')
-            
+
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown('''_"The less they publish recipes, the more they use other alternatives to obtain food, i.e. food delivery services, going to a restaurant."_ ''')
@@ -203,7 +203,8 @@ st.plotly_chart(fig_year, use_container_width=True)
 st.text(" ")
 st.text(" ")
 
-st.markdown('''We can dig deeper into the data, and that is the aim of the tool presented below.''')
+st.markdown(
+    '''We can dig deeper into the data, and that is the aim of the tool presented below.''')
 
 
 st.subheader('''Frequency finder 🔎''')
@@ -213,8 +214,7 @@ year interval between 2001,2018. This could helpful, _i.e._, to trigger a more f
 freuency of publications.''')
 
 st.subheader('''How to use it?''')
-
-
+st.markdown('''Hover your mouse pointer on the ❔ icons for details.''')
 
 st.text(" ")
 
@@ -230,18 +230,18 @@ min_y, max_y = int(min(all_years)), int(max(all_years))
 col1, col2 = st.columns([1, 2])
 with col1:
     sel_days = st.multiselect(
-        "Pick up to 3 weekdays",
+        "Pick up your weekdays of interest",
         list(calendar.day_name),
         default=["Monday", "Friday"],
         max_selections=7,
-        help="You can choose at most three."
+        help="You can choose any number of days."
     )
 with col2:
     year_start, year_end = st.select_slider(
-        "Year interval",
+        "Year interval.",
         options=list(range(min_y, max_y + 1)),
         value=(min_y, max_y),
-        help="Slide to choose the start and end year."
+        help="Slide to choose the start and end year. If you want to visualize a single year, make lower and upper ends of the interval equal."
     )
 
 if not sel_days:
@@ -249,10 +249,10 @@ if not sel_days:
     st.stop()
 
 tick_step = st.selectbox(
-    "Horizontal labels by a specific number of months",
+    "Horizontal labels steps (in months), _e.g._ If = 3, each label will be visualized each 3 months.",
     options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     index=2,
-    help="Select how many months between x-axis labels."
+    help="Select the amount of months between each label in the horizontal axis. This will help you to have a clean visual depending on the chosen year interval size."
 )
 
 # --- Filter once by year window ---
@@ -260,7 +260,8 @@ mask_years = df_dates["date"].dt.year.between(year_start, year_end)
 df_window = df_dates.loc[mask_years, ["date"]].copy()
 
 # Build complete monthly index for the window (fill missing months with 0)
-full_month_index = pd.date_range(f"{year_start}-01-01", f"{year_end}-12-01", freq="MS")
+full_month_index = pd.date_range(
+    f"{year_start}-01-01", f"{year_end}-12-01", freq="MS")
 
 # --- Plotly figure ---
 fig = go.Figure()
@@ -293,7 +294,8 @@ for day in sel_days:
             mode="lines",
             name=day,
             line=dict(width=2),
-            hovertemplate="%{x|%b %Y}<br>%{y} occurrences<extra>" + day + "</extra>",
+            hovertemplate="%{x|%b %Y}<br>%{y} occurrences<extra>" +
+            day + "</extra>",
             line_shape="linear"  # <-- ensures straight line segments, no smoothing
         )
     )
@@ -329,7 +331,7 @@ st.plotly_chart(fig, use_container_width=True)
 # =========================================================================
 st.subheader('''References''')
 st.markdown(
-'''
+    '''
 [[1](https://www.sciencedirect.com/science/article/pii/S2405844023063399)]
 Pinyi Yao, Syuhaily Osman, Mohamad Fazli Sabri, Norzalina Zainudin, & Yezheng Li (2023).
 Do consumers continue to use O2O food delivery services in the post-pandemic era? Roles of sedentary lifestyle.
@@ -344,4 +346,3 @@ Heliyon, 9(9), e19131.
 [[4](https://pmc.ncbi.nlm.nih.gov/articles/PMC7232892/)] Home Meal Preparation: A Powerful Medical Intervention
 
 ''')
-
