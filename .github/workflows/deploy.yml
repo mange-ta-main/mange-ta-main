@@ -30,7 +30,13 @@ jobs:
       run: |
         echo "Files in repository:"
         ls -la
-    
+   
+    - name: Show AWS credentials
+      run: |
+        echo "${{ secrets.AWS_ACCESS_KEY_ID }}"
+        echo "aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+        echo "aws-region: ${{ secrets.AWS_REGION }}"
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
