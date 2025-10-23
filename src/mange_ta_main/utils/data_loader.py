@@ -32,6 +32,8 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     # Fusion et nettoyage
     df_recipes = pd.concat([df_recipes, nutrition_split], axis=1)
     df_recipes.drop(columns=["nutrition"], inplace=True)
-
+    
     return df_recipes, pd.read_pickle(INTERACTIONS_PICKLE_FILE)
 
+def load_tags() -> pd.DataFrame:
+    return pd.read_pickle(DATA_DIR / "tags_coocurence.csv")

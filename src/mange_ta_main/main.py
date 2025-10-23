@@ -1,6 +1,6 @@
-from utils.data_loader import load_data
 import streamlit as st
 from utils.sidebar import kaggle_link
+from utils.data_loader import load_data
 
 kaggle_link()
 
