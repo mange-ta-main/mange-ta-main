@@ -9,22 +9,13 @@ from utils.data_loader import load_data
 from utils.logger import logger
 from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
 
-st.set_page_config(page_title="Weekday frequencies", layout="wide")
-
-
-# =========================================================================
-# Retrieve and prepare data
-# =========================================================================
-
-
-st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
 df_recipes, _ = load_data()
 
-# logger.info(f'sdfdsf {df_recipes.columns}')
+st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
 # Retrieve targeted feature
 feat_name = 'submitted'
