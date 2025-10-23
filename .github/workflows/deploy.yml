@@ -37,3 +37,10 @@ jobs:
         echo "Checking CodeDeploy application..."
         aws deploy get-application --application-name ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
         echo "CodeDeploy application found!"
+
+    - name: Deploy to CodeDeploy
+      uses: aws-actions/aws-codedeploy-deploy@v1
+      with:
+        application-name: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
+        deployment-group: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
+        source-directory: .
