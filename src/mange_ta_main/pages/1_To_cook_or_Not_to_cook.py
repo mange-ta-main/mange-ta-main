@@ -6,7 +6,7 @@ import seaborn as sns
 import streamlit as st
 from utils.data_loader import load_data
 from utils.logger import logger
-from assets import EATING_AT_RESTAURANT, JUNK_FOOD
+from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
 
 st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
@@ -14,8 +14,9 @@ st.set_page_config(page_title="Weekday frequencies", layout="wide")
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
+#df_recipes, _ = load_data()
+df_recipes = pd.read_csv("Data/RAW_recipes.csv")
 
-df_recipes, _ = load_data()
 # logger.info(f'sdfdsf {df_recipes.columns}')
 
 # Retrieve targeted feature
@@ -33,12 +34,101 @@ years = df_dates["year"]
 # Remove empty data
 df_dates = df_dates.dropna()
 
-st.subheader('''To Cook or NOT to Cook?''')
+
 st.subheader('Are people eating more outside, *e.g.* in restaurantns, cafés, or ordering food to their homes instead of cooking?')
-st.subheader('''This might look O.k. but it's **NOT!**''')
+# --------------------------------------------------
+# Introduction
+# --------------------------------------------------
+
+st.markdown('''Who doesn't love eating? :yum:. The answer to that question is pretty obvious,
+however you will be surprised how your **the way you eat** is contributing impact your heealth, and of course not in your best interest.
+
+Let's take the example of food delivery services 🍔📦. They offer consumers an attractive option instead of cooking at home or going out for diner.
+They can purchase food via mobile applications and get delivered to their house or workplace
+[[1](https://www.sciencedirect.com/science/article/pii/S2405844023063399)].
+''')
+
+col1, col2, col3 = st.columns([1, 2, 1])
+# ----------------------------------------
+# Picture
+# ----------------------------------------
+# Centered image
+with col2:
+    st.image(FOOD_DELIVERY, width = 800)
+# ----------------------------------------
+
+st.markdown('''
+We may order food online for many reasons 🤔, to save time, to try something different or new,
+or simply because we are not just in the mood for cooking ... 😑.
+            
+           
+Whatever the reason, is our choices of food may not always be the best ones from a nutritional point of view. A poor
+diet contributes substantially to the development of noncommunicable diseases  (NCD) [[2](https://pubmed.ncbi.nlm.nih.gov/37018540/)], _e.g._ heart diseases,
+ diabetes, cancer, etc., ...''')
+
+st.markdown('''
+According to the World Health Organization (WHO), NCDs result from a combination of several factors, such as, genetic, physiological, envinmental and behavioural
+[[3](https://www.who.int/news-room/fact-sheets/detail/noncommunicable-diseases)].
+
+Behavioural factor include
+
+- unhealthy diets, including excess salt, sugar, and fats as well as*
+- insufficient physical activity
+- harmful use of alcohol; and
+- tobacco use (including the effects of exposure to second-hand smoke)
+
+
+Eating poorly could lead to conditions like high blood pressure, high blood sugar, high cholesterol, and obesity.
+''')
+
+col1, col2, col3 = st.columns([1, 2, 1])
+
+# ----------------------------------------
+# Picture
+# ----------------------------------------
+with col2:
+    st.image(JUNK_FOOD, width=400)
+# ----------------------------------------
+
+st.subheader('''To Cook or NOT to Cook?''')
+
+st.markdown('''The answer is straightforward!
+Home cooking is associated with numerous health benefits, including a reduced risk of type 2 diabetes mellitus and other chronic diseases
+[[4](https://pmc.ncbi.nlm.nih.gov/articles/PMC7232892/)]. People who cook at home eat higher quality food, consume less calories, spend
+ less money on food, and have less weight gain over time than those who dine out and eat prepared foods on a regular basis.
+
+Conversely, consuming prepared, ultraprocessed foods has been linked to increased rates of cardiometabolic diseases and overall cancer
+ risk as well as breast cancer risk.  
+''')
+
+st.markdown('''When you cook at home you are the master of what you put in your plate. You control what you eat, the quality of the ingredientes and the way you
+cook them. the answer to the question **Are people eating more outside, *e.g.* in restaurantns, cafés, or ordering food to their homes instead of cooking?** Well certainly
+ we don't know for sure but we will try to provide some insights anyway.
+''')
+
+
+st.subheader('''The study case of Food.com''')
+
+st.markdown('''
+We studied data from generated from the website Food.com (a social network service featuring recipes from home cooks and even celebrity chefs).
+
+            
+''')
+
+
+
+
+
+
+
+
+
+
+
+
+
 st.subheader('''When is this happening?''')
 
-# st.columns() creates horizontal containers (columns) that divide your app’s page side by side
 col1, col2, col3 = st.columns([1, 2, 1])
 
 # ----------------------------------------
@@ -50,12 +140,7 @@ with col2:
 # ----------------------------------------
 
 
-# ----------------------------------------
-# Picture
-# ----------------------------------------
-with col2:
-    st.image(JUNK_FOOD, width=400)
-# ----------------------------------------
+
 
 
 text_2 = ''' When you eat outside or order food to your place, you are not in control of the way food is prepared, nor the type of ingredients nor their quality.'''
@@ -196,3 +281,26 @@ st.pyplot(fig)
 # Create interactive plot
 # END
 # =========================================================================
+
+
+# --------------------------------------------------
+# Sources
+# --------------------------------------------------
+st.subheader('''References''')
+st.markdown(
+'''
+[[1](https://www.sciencedirect.com/science/article/pii/S2405844023063399)]
+Pinyi Yao, Syuhaily Osman, Mohamad Fazli Sabri, Norzalina Zainudin, & Yezheng Li (2023).
+Do consumers continue to use O2O food delivery services in the post-pandemic era? Roles of sedentary lifestyle.
+Heliyon, 9(9), e19131.
+
+[[2](https://pubmed.ncbi.nlm.nih.gov/37018540/)] Tham XC, Whitton C, Müller-Riemenschneider F, Petrunoff NA. Young Adults' Use of Mobile Food Delivery Apps
+ and the Potential Impacts on Diet During the COVID-19 Pandemic: Mixed Methods Study. JMIR Form Res. 2023 May
+   9;7:e38959. doi: 10.2196/38959. PMID: 37018540; PMCID: PMC10173705.
+
+[[3](https://www.who.int/news-room/fact-sheets/detail/noncommunicable-diseases)] Noncommunicable diseases.
+
+[[4](https://pmc.ncbi.nlm.nih.gov/articles/PMC7232892/)] Home Meal Preparation: A Powerful Medical Intervention
+
+''')
+
