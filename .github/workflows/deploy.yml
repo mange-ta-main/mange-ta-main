@@ -1,0 +1,51 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - feature/github_actions
+
+# env:
+#   applicationfolder: spring-boot-hello-world-example
+#   AWS_REGION: ##region##
+#   S3BUCKET: ##s3-bucket## 
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Log basic info
+      run: |
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Actor: ${{ github.actor }}"
+    
+    - name: List files
+      run: |
+        echo "Files in repository:"
+        ls -la
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Test AWS connection
+      run: |
+        echo "Testing AWS connection..."
+        aws sts get-caller-identity
+        echo "AWS connection successful!"
+    
+    - name: Test CodeDeploy access
+      run: |
+        echo "Checking CodeDeploy application..."
+        aws deploy get-application --application-name ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
+        echo "CodeDeploy application found!"
