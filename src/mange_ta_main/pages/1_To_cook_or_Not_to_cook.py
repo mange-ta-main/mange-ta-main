@@ -1,7 +1,6 @@
 import numpy as np
 import calendar
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import matplotlib.dates as mdates
 import seaborn as sns
@@ -10,15 +9,13 @@ from utils.data_loader import load_data
 from utils.logger import logger
 from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
 
-st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
-# df_recipes, _ = load_data()
-df_recipes = pd.read_csv("Data/RAW_recipes.csv")
+df_recipes, _ = load_data()
 
-# logger.info(f'sdfdsf {df_recipes.columns}')
+st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
 # Retrieve targeted feature
 feat_name = 'submitted'
@@ -41,7 +38,6 @@ df_dates = df_dates.dropna()
 # =========================================================================
 
 st.subheader('Are people eating more outside, *e.g.* in restaurants, cafés, or ordering food to their homes instead of cooking?')
-
 # ----------------------------------------
 # Picture
 # ----------------------------------------
