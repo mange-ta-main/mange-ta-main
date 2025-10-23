@@ -1,6 +1,8 @@
+import numpy as np
 import calendar
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import matplotlib.dates as mdates
 import seaborn as sns
 import streamlit as st
@@ -9,7 +11,6 @@ from utils.logger import logger
 from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
 
 st.set_page_config(page_title="Weekday frequencies", layout="wide")
-
 
 # =========================================================================
 # Retrieve and prepare data
@@ -35,10 +36,20 @@ years = df_dates["year"]
 df_dates = df_dates.dropna()
 
 
-st.subheader('Are people eating more outside, *e.g.* in restaurantns, cafés, or ordering food to their homes instead of cooking?')
-# --------------------------------------------------
-# Introduction
-# --------------------------------------------------
+# =========================================================================
+# Page content
+# =========================================================================
+
+st.subheader('Are people eating more outside, *e.g.* in restaurants, cafés, or ordering food to their homes instead of cooking?')
+
+# ----------------------------------------
+# Picture
+# ----------------------------------------
+# Centered image
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image(EATING_AT_RESTAURANT, width = 400)
+# ----------------------------------------
 
 st.markdown('''Who doesn't love eating? :yum:. The answer to that question is pretty obvious,
 however you will be surprised how your **the way you eat** is contributing impact your heealth, and of course not in your best interest.
@@ -48,11 +59,11 @@ They can purchase food via mobile applications and get delivered to their house 
 [[1](https://www.sciencedirect.com/science/article/pii/S2405844023063399)].
 ''')
 
-col1, col2, col3 = st.columns([1, 2, 1])
 # ----------------------------------------
 # Picture
 # ----------------------------------------
 # Centered image
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(FOOD_DELIVERY, width = 800)
 # ----------------------------------------
@@ -81,11 +92,10 @@ Behavioural factor include
 Eating poorly could lead to conditions like high blood pressure, high blood sugar, high cholesterol, and obesity.
 ''')
 
-col1, col2, col3 = st.columns([1, 2, 1])
-
 # ----------------------------------------
 # Picture
 # ----------------------------------------
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image(JUNK_FOOD, width=400)
 # ----------------------------------------
@@ -102,91 +112,118 @@ Conversely, consuming prepared, ultraprocessed foods has been linked to increase
 ''')
 
 st.markdown('''When you cook at home you are the master of what you put in your plate. You control what you eat, the quality of the ingredientes and the way you
-cook them. the answer to the question **Are people eating more outside, *e.g.* in restaurantns, cafés, or ordering food to their homes instead of cooking?** Well certainly
- we don't know for sure but we will try to provide some insights anyway.
+cook them. the answer to the question **Are people eating more outside, or ordering food to their homes instead of cooking?** Well certainly
+ we don't know for sure but we will try to provide some insights.
 ''')
 
 
 st.subheader('''The study case of Food.com''')
 
 st.markdown('''
-We studied data from generated from the website Food.com (a social network service featuring recipes from home cooks and even celebrity chefs).
-
-            
+We analyzed data from generated from the website Food.com (a social network service where home cooks and even celebrity chefs can share their recipes).
+We studied particularly the frequency at which users published recipes. Our assumptions are the following:
 ''')
 
-
-
-
-
-
-
-
-
-
-
-
-
-st.subheader('''When is this happening?''')
-
 col1, col2, col3 = st.columns([1, 2, 1])
-
-# ----------------------------------------
-# Picture
-# ----------------------------------------
-# Centered image
 with col2:
-    st.image(EATING_AT_RESTAURANT, width = 400)
+    st.markdown('''
+    _"The more they publish recipes, the more they cook at home"._
+    ''')
+
+st.markdown('''Conversely,''')
+            
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.markdown('''_"The less they publish recipes, the more they use other alternatives to obtain food, i.e. food delivery services, going to a restaurant."_ ''')
+
+
+st.markdown('''
+We got access to data of puslished recipes bethween 1999 and 2018. When we take a look to the frequency of published recipes per year we can notice some ups and downs.
+ (see figure below). 
+            
+- If we take a look, _e.g._, to the years 2022,2003 and 2004 we can notice that the amount of published recipes decreased.
+- Then, the frequency increased again between 2005 and 2007 to
+- finally decrease non-stop until 2018.
+
+Based on these global observations and on the above presented assumption, we could obtain learnings about the habits of the 
+contributors to the website Food.com. The platform contributors (even new ones) could be nudged to cook more and
+share their recipes with the community.For instance,
+            
+            
+- If the frequency of publications is decreasing, advertising on the benefits of cooking at home could be triggered.
+- If the frequency of publications is increasing, the advertising could focus on rewarding its contributors, attract newones.
+''')
+
+# ----------------------------------------
+# Histogram | Years (Plotly version)
 # ----------------------------------------
 
-
-
-
-
-text_2 = ''' When you eat outside or order food to your place, you are not in control of the way food is prepared, nor the type of ingredients nor their quality.'''
-st.markdown(text_2)
-
-context_habits = '''In the last decades it's been observed that there has been a decline in the amount of submitted recipes. This is telling us something: 
-May be ceratin portions of the global population cook less and less at home, therefore they go outside more often, for instance, to restaurants, to cafés or they are ordering food
-to be delivered to their homes.'''
-st.markdown(context_habits)
-
-# ----------------------------------------
-# Histogram | Years
-# ----------------------------------------
 # Compute bins so each bin belongs to a year
-bins = range(int(years.min()), int(years.max()) + 2)
+bins = list(range(int(years.min()), int(years.max()) + 2))
 
-# Generate histogram
-fig_year = plt.figure(figsize=(7,3))
-plt.hist(years, bins=bins, align="left",color="paleturquoise", edgecolor="black", rwidth=0.9)
+# Build the histogram
+fig_year = go.Figure(
+    data=[
+        go.Histogram(
+            x=years,
+            xbins=dict(start=bins[0], end=bins[-1], size=1),
+            marker=dict(
+                color="paleturquoise",
+                line=dict(color="black", width=1)
+            ),
+            opacity=0.9
+        )
+    ]
+)
 
-# Each horizontal axis matches a separate year
-plt.xticks(range(int(years.min()), int(years.max()) + 1))
-plt.tick_params(axis='x', labelrotation=70)
+# Layout settings
+fig_year.update_layout(
+    title="Annual frequencies of published recipes",
+    xaxis=dict(
+        title="Year",
+        tickmode="linear",
+        dtick=1,
+        tickangle=70,
+        gridcolor="rgba(0,0,0,0.1)"
+    ),
+    yaxis=dict(
+        title="Frequency",
+        gridcolor="rgba(0,0,0,0.1)"
+    ),
+    bargap=0.05,
+    plot_bgcolor="white",
+    width=700,
+    height=600
+)
 
-plt.title("Annual frequencies of recipes publications")
-plt.ylabel("Frequency")
-plt.xlabel("Years")
-plt.grid(True, linestyle='--', alpha=1)
-st.pyplot(fig_year)
+# Display in Streamlit
+st.plotly_chart(fig_year, use_container_width=True)
 # ----------------------------------------
 
-
-st.subheader('''Let's find out what happend in the last years for each day of the week?''')
-
-text_3 = ''' Thanks to the interface below you will be able to compare the frequencies for up to 3 days of the week for any year interval between [2001,2018].
-Come along and dive deep into the users behaviours, help us identify at what moment would be intereseing to advertise people to eat more at home.'''
-st.markdown(text_2)
-
 st.text(" ")
 st.text(" ")
 
+st.markdown('''We can dig deeper into the data, and that is the aim of the tool presented below.''')
+
+
+st.subheader('''Frequency finder 🔎''')
+
+st.markdown('''The interface below called Frequency finder, will help you to to compare the frequencies for the 7 days of the week for any
+year interval between 2001,2018. This could helpful, _i.e._, to trigger a more fine and targeted advertising according to the trend of
+freuency of publications.''')
+
+st.subheader('''How to use it?''')
+
+
+
+st.text(" ")
+
+
 # =========================================================================
-# Create interactive plot
-# BEGIN
+# Interactive interface
 # =========================================================================
 
+# --- Inputs & setup (df_dates assumed available) ---
 all_years = sorted(df_dates["date"].dt.year.unique())
 min_y, max_y = int(min(all_years)), int(max(all_years))
 
@@ -196,7 +233,7 @@ with col1:
         "Pick up to 3 weekdays",
         list(calendar.day_name),
         default=["Monday", "Friday"],
-        max_selections=3,
+        max_selections=7,
         help="You can choose at most three."
     )
 with col2:
@@ -207,51 +244,9 @@ with col2:
         help="Slide to choose the start and end year."
     )
 
-
-
 if not sel_days:
     st.info("Select at least one weekday to plot.")
     st.stop()
-
-# --- Filter to year interval once ---
-mask_years = df_dates["date"].dt.year.between(year_start, year_end)
-df_window = df_dates.loc[mask_years, ["date"]].copy()
-
-# Build a complete monthly index for the time window (to fill missing months with 0)
-full_month_index = pd.date_range(f"{year_start}-01-01", f"{year_end}-12-01", freq="MS")
-
-# --- Plot ---
-fig, ax = plt.subplots(figsize=(11, 5))
-
-
-for day in sel_days:
-    # Filter this weekday
-    m = df_window["date"].dt.day_name() == day
-    d = df_window.loc[m, "date"].copy()
-
-    
-    # Build monthly counts per weekday using Period → Timestamp
-    mc = (
-        d.dt.to_period("M").value_counts().sort_index()
-        .rename_axis("ym").reset_index(name="count")
-    )
-    mc["date_label"] = mc["ym"].dt.to_timestamp()
-
-    # Keep only the needed columns to avoid Period dtype during reindex
-    mc = (
-    mc[["date_label", "count"]]
-      .set_index("date_label")
-      .reindex(full_month_index, fill_value=0)
-      .reset_index()
-      .rename(columns={"index": "date_label"})
-    )
-    
-    # Reindex on full monthly index to ensure continuous line with zeros for gaps
-    mc = mc.set_index("date_label").reindex(full_month_index, fill_value=0).reset_index()
-    mc = mc.rename(columns={"index": "date_label"})
-
-    ax.plot(mc["date_label"], mc["count"], linewidth=2, label=day, marker=".")
-
 
 tick_step = st.selectbox(
     "Horizontal labels by a specific number of months",
@@ -260,32 +255,78 @@ tick_step = st.selectbox(
     help="Select how many months between x-axis labels."
 )
 
-# Formatting
-ax.set_title(f"Weekday frequencies per month ({year_start}–{year_end})")
-ax.set_xlabel("Time (Year–Month)")
-ax.set_ylabel("Frequency")
-ax.grid(True, linestyle="--", alpha=0.6)
+# --- Filter once by year window ---
+mask_years = df_dates["date"].dt.year.between(year_start, year_end)
+df_window = df_dates.loc[mask_years, ["date"]].copy()
 
-# Nice date ticks (every 3 months, e.g. 'Jan 2003')
-ax.xaxis.set_major_locator(mdates.MonthLocator(interval=tick_step))
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-for label in ax.get_xticklabels():
-    label.set_rotation(45)
-    label.set_horizontalalignment("right")
+# Build complete monthly index for the window (fill missing months with 0)
+full_month_index = pd.date_range(f"{year_start}-01-01", f"{year_end}-12-01", freq="MS")
 
-ax.legend(title="Weekday")
+# --- Plotly figure ---
+fig = go.Figure()
 
-st.pyplot(fig)
+for day in sel_days:
+    # Filter this weekday
+    m = df_window["date"].dt.day_name() == day
+    d = df_window.loc[m, "date"].copy()
+
+    # Monthly counts per weekday
+    mc = (
+        d.dt.to_period("M").value_counts().sort_index()
+        .rename_axis("ym").reset_index(name="count")
+    )
+    mc["date_label"] = mc["ym"].dt.to_timestamp()
+
+    # Keep only needed columns and reindex on full monthly index (fill gaps with 0)
+    mc = (
+        mc[["date_label", "count"]]
+        .set_index("date_label")
+        .reindex(full_month_index, fill_value=0)
+        .reset_index()
+        .rename(columns={"index": "date_label"})
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=mc["date_label"],
+            y=mc["count"],
+            mode="lines",
+            name=day,
+            line=dict(width=2),
+            hovertemplate="%{x|%b %Y}<br>%{y} occurrences<extra>" + day + "</extra>",
+            line_shape="linear"  # <-- ensures straight line segments, no smoothing
+        )
+    )
+
+# --- Layout & axes ---
+fig.update_layout(
+    title=f"Weekday frequencies per month ({year_start}–{year_end})",
+    xaxis_title="Time (Year–Month)",
+    yaxis_title="Frequency",
+    legend_title="Weekday",
+    hovermode="x unified",
+    margin=dict(l=10, r=10, t=60, b=10)
+)
+
+# Monthly ticks every `tick_step` months with 'Mon YYYY' format
+fig.update_xaxes(
+    dtick=f"M{tick_step}",
+    tickformat="%b %Y",
+    tickangle=45,
+    showgrid=True,
+    gridwidth=1
+)
+fig.update_yaxes(showgrid=True, gridwidth=1, rangemode="tozero")
+
+# Optional tighter x-range for nice padding
+fig.update_xaxes(range=[full_month_index.min(), full_month_index.max()])
+
+st.plotly_chart(fig, use_container_width=True)
+
 
 # =========================================================================
-# Create interactive plot
-# END
+# References
 # =========================================================================
-
-
-# --------------------------------------------------
-# Sources
-# --------------------------------------------------
 st.subheader('''References''')
 st.markdown(
 '''
