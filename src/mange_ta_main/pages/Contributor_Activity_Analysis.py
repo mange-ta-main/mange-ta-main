@@ -31,7 +31,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("📊 Summary: Contributor Behavior and Temporal Analysis")
+st.title("Summary: Contributor Behavior and Temporal Analysis")
 st.markdown("""
 This page presents a **temporal and behavioral analysis** of contributors:
 - Identification of *top contributors* (P99)
@@ -46,7 +46,7 @@ allowing targeted interventions for maximum impact in a public health context.
 # ==========================================================
 #                SIDEBAR CONTROLS
 # ==========================================================
-st.sidebar.header("⚙️ Clustering Parameters")
+st.sidebar.header("Clustering Parameters")
 
 # --- Clustering parameter (only one kept) ---
 n_clusters = st.sidebar.slider("Number of clusters", 2, 8, 3)
@@ -276,15 +276,52 @@ st.plotly_chart(fig)
 # ==========================================================
 st.header("Super Core Contributor Analysis")
 
+st.subheader(" Contributor Targeting Summary and Cluster Dynamics")
+
 """
 The Z-Score activity index represents each contributor’s relative participation dynamics — 
 it shows how much their activity at a given time deviates from their own average.
-
-Cluster selection: an initial 4-cluster setup revealed one inactive cluster, 
-so we retained **3 clusters** for interpretability.
-
-Temporal analysis suggests the platform peaked between **2002 and 2015**, 
-with two dominant contributor groups:
-- Early active users (2002–2008)
-- Later active users (2008–2015)
 """
+
+st.markdown("""
+The analysis performed with a **4-cluster configuration** appears to be the most relevant, 
+as it reveals **three well-defined groups of contributors** over time.
+
+-  **Cluster 0 – Early Pioneers (2000–2004):** this first group emerged at the platform’s creation.  
+  Their activity declined progressively after 2002 and completely faded out by 2004, 
+  giving way to the next generation of contributors.  
+- **Cluster 1 – Historical Core (2004–2015):** the dominant group, 
+  sustaining most of the platform’s activity throughout its active lifespan.  
+-  **Cluster 2 – Late Active Users (2007–2015):** a third group emerged in 2007 
+  and coexisted for several years with the previous one.  
+  Both clusters eventually disappeared by 2015, marking the end of significant contributor activity.
+
+---
+""")
+
+# ==========================================================
+#               CONCLUSION
+# ==========================================================
+
+st.header("Conclusion contributor Behavior and Temporal Analysis")
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Contributors (P99)", "277")
+col2.metric("Clusters 1 & 2 (4-cluster setup)", "38")
+col3.metric("Active in last 6 months", "35")
+
+"""
+By focusing on the **two most active clusters (1 and 2)** — corresponding to the platform’s maturity phase (2007–2015):
+- among the **277 contributors in the 99th percentile (P99)**, **38 major contributors** were identified;  
+- applying an additional criterion of **recent activity (within the last six months)** 
+  further narrows this group down to **35 key contributors**.
+
+These 35 contributors form the **strategic core to retain, support, and guide** 
+in promoting **public health objectives** and improving the **nutritional quality** of the recipes shared on the platform.
+
+"""
+
+
+
+
+
