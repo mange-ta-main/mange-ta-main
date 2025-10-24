@@ -1,5 +1,5 @@
 # ==========================================================
-#               📊 CONTRIBUTOR ANALYSIS (Simplified Interactive)
+#          CONTRIBUTOR ANALYSIS (Simplified Interactive)
 # ==========================================================
 import os
 import sys
@@ -27,7 +27,6 @@ df_recipes, _ = load_data()
 # ==========================================================
 st.set_page_config(
     page_title="Contributor Analysis",
-    page_icon="📊",
     layout="wide",
 )
 
@@ -55,7 +54,7 @@ n_clusters = st.sidebar.slider("Number of clusters", 2, 8, 3)
 # ==========================================================
 #                 PART 1: LORENZ CURVE
 # ==========================================================
-st.subheader("1️⃣ Contribution Concentration — Lorenz Curve")
+st.subheader("1 Contribution Concentration — Lorenz Curve")
 
 nb_recipes_contributor = df_recipes['contributor_id'].value_counts()
 total_recipes = nb_recipes_contributor.sum()
@@ -251,7 +250,7 @@ super_core_share = results["super_core_recipe_share"]
 # ==========================================================
 #               CLUSTER VISUALIZATION
 # ==========================================================
-st.subheader("2️⃣ Average Normalized Activity Over Time")
+st.subheader("2 Average Normalized Activity Over Time")
 
 activity_cols = activity.columns[:-1]  # exclude cluster column
 fig = go.Figure()
