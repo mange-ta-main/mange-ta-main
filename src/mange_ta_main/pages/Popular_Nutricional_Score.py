@@ -3,14 +3,9 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
+import plotly.graph_objects as go
 from utils.data_loader import load_data, nutrition_categories
 
-# Remove access to utils library due to echec to generate Pickle files with import_data.py
-#from mange_ta_main.utils.data_loader import load_data
-
-# Change data extension to catch csv files and not pickle ones
-
-# copy from utils file and change pickle to csv to keep the load_data() function
 
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):
@@ -54,7 +49,9 @@ st.markdown("""
 st.write("Example for the 5 fist lines")
 st.dataframe(interaction_data.head())
 
-# Determination of the number of evaluated recipes
+# Determination of the number of evaluated recipes# Change data extension to catch csv files and not pickle ones
+
+# copy from utils file and change pickle to csv to keep the load_data() function
 nb_recette_notees = interaction_data["recipe_id"].nunique()
 nb_recette_recipe = recipes["id"].count()
 st.markdown(f"""The number of evaluated recipes : {nb_recette_notees} is identical to the number of recipes in the recipes dataset : {nb_recette_recipe}.
@@ -119,19 +116,35 @@ with col2:
     y_max_value = st.slider(selected_column, 0, max_val, value=max_val)
 
     # Plot nutritional parameter versus nb of evaluations
-    fig5, ax5 = plt.subplots()
-    ax5.scatter(recipes_evaluation_merged_cleaned["n_evaluated"], recipes_evaluation_merged_cleaned[selected_column], color="orange", s=dot_size, alpha=0.3, label=selected_column)
-    ax5.scatter(popular_recipes_merged["n_evaluated"], popular_recipes_merged[selected_column], color="teal", s=dot_size, label="most popular")
-    ax5.set_xlabel("Number of evaluations")
-    ax5.set_ylabel(selected_column)
-    ax5.set_title(f"Relationship between number of evaluations and {selected_column} for the all recipes")
-    ax5.grid(True)
-    ax5.set_xlim(selected_x)
-    ax5.set_ylim(0, y_max_value)
-    ax5.legend()
-    st.pyplot(fig5)
-
+    fig5 = go.Figure()
+    # Plot all recipes evaluations
+    fig5.add_trace(go.Scatter(
+        x=recipes_evaluation_merged_cleaned["n_evaluated"],
+        y=recipes_evaluation_merged_cleaned[selected_column],
+        mode='markers',
+        marker=dict(color='orange', size=dot_size, opacity=0.3),
+        name=selected_column
+    ))
+    # Plot the most popular recipes
+    fig5.add_trace(go.Scatter(
+        x=popular_recipes_merged["n_evaluated"],
+        y=popular_recipes_merged[selected_column],
+        mode='markers',
+        marker=dict(color='teal', size=dot_size),
+        name='most popular'
+    ))
+    #graph update
+    fig5.update_layout(
+        title=f"Relationship between number of evaluations and {selected_column} for the all recipes",
+        xaxis_title="Number of evaluations",
+        yaxis_title=selected_column,
+        xaxis=dict(range=selected_x, showgrid=True),
+        yaxis=dict(range=[0, y_max_value], showgrid=True),
+        legend_title="Legend"
+    )
+    st.plotly_chart(fig5)    
+    
+    
 st.header("3 Conclusion")
 st.write("In conclusion, all the most popular recipes have a good nutritional quality."
          "\nIt seems that the number of evaluations can be a parameter to find a good recipe.")
-
