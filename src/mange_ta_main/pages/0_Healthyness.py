@@ -1,15 +1,13 @@
-import os
 from collections import Counter
 
 import streamlit as st
 import pandas as pd
 import matplotlib
-import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from adjustText import adjust_text
+import plotly.express as px
 
 from utils.sidebar import kaggle_link
 from utils.data_loader import load_data
@@ -27,40 +25,42 @@ st.sidebar.image(CAMENBEAR, width="stretch")
 
 logger.info("Starting healthiness analysis page...")
 
-# WARN: clustering is not being cached properly, leading to longer load times
 
 @st.cache_data
-def preprocess_data() -> pd.DataFrame: 
+def preprocess_data() -> pd.DataFrame:
+    """Load and preprocess recipe data with outlier removal."""
     logger.info("Preprocessing nutritional data...")
     df_recipes, df_interactions = load_data()
-    df_recipes["Calories_pdv"] = (
-        df_recipes["Calories"] / 2000
-    ) * 100  # convert absolute value to PDV
+    df_recipes["Calories"] = (df_recipes["Calories"] / 2000) * 100
 
     numeric_cols = df_recipes.select_dtypes(include=["number"]).columns
     for col in numeric_cols:
         lower = df_recipes[col].quantile(0.01)
         upper = df_recipes[col].quantile(0.99)
-        df_recipes = df_recipes[(df_recipes[col] >= lower) & (df_recipes[col] <= upper)]
+        df_recipes = df_recipes[
+            (df_recipes[col] >= lower) & (df_recipes[col] <= upper)
+        ]
     return df_recipes
 
 
 df_recipes = preprocess_data()
+THRESHOLD = 33
 
-# --- Main analysis question ---
-st.title("Are the dishes proposed by the platform healthy?")
+st.title("Are the meals proposed by the platform healthy?")
 
-# --- First approach ---
 st.markdown("""
-To get an initial overview, let's visualize the distribution of each nutritional variable.  
-For each one, we display a histogram of its **Percent Daily Value (PDV)**, meaning how much a single portion contributes to daily intake.
+We visualize the distribution of each nutritional variable to identify how many recipes
+fall above or below 33% of the recommended daily intake, assuming three meals per day.
 
-A red dashed line indicates the **recommended PDV for a meal**.     
-If most recipes exceed this threshold, they likely contain excessive amounts of that nutrient.
+**Color coding:** Dark blue indicates recipes providing less than 33% of the daily value,
+while light blue represents those providing more than 33%.
+
+**Data processing:** The original data was converted into seven numerical features and
+outliers (below 1st percentile and above 99th percentile) were removed.
 """)
-
-nutriments = [
-    "Calories_pdv",
+st.markdown("<br>", unsafe_allow_html=True)
+NUTRIENTS = [
+    "Calories",
     "Total fat",
     "Sugar",
     "Sodium",
@@ -69,68 +69,67 @@ nutriments = [
     "Carbohydrates",
 ]
 
-recommended_values = {
-    "Calories_pdv": 33,
-    "Total fat": 33,
-    "Saturated fat": 33,
-    "Sugar": 25,
-    "Sodium": 25,
-    "Protein": 33,
-    "Carbohydrates": 33,
+summary = {
+    n: {
+        "≤ 33% of PDV": (df_recipes[n] <= THRESHOLD).sum(),
+        "> 33% of PDV": (df_recipes[n] > THRESHOLD).sum(),
+    }
+    for n in NUTRIENTS
 }
 
-selected_nutriment = st.radio(
-    label="choose nutrient", options=nutriments, horizontal=True, label_visibility="collapsed"
+st.markdown("### Distribution of recipes by nutrient category")
+df_summary = pd.DataFrame(summary).T
+
+df_melt = df_summary.reset_index().melt(
+    id_vars="index",
+    var_name="Category",
+    value_name="Count"
 )
 
-fig, ax = plt.subplots(figsize=(7, 4))
-sns.histplot(
-    df_recipes[selected_nutriment],
-    bins=20,
-    kde=True,
-    ax=ax,
-    color="skyblue",
-    edgecolor="white",
+df_melt["Proportion"] = df_melt.groupby("index")["Count"].transform(
+    lambda x: x / x.sum() * 100
 )
 
-rec_value = recommended_values[selected_nutriment]
-ax.axvline(
-    rec_value,
-    color="red",
-    linestyle="--",
-    linewidth=2,
-    label=f"Recommended ({rec_value} PDV)",
+fig = px.bar(
+    df_melt,
+    x="index",
+    y="Proportion",
+    color="Category",
+    color_discrete_map={
+        "≤ 33% of PDV": "#0B4F6C",
+        "> 33% of PDV": "#A7C7E7",
+    },
+    title="Share of recipes above and below 33% of daily value per nutrient",
+    labels={"index": "Nutrient", "Proportion": "Share of recipes (%)"},
 )
-ax.legend()
-ax.set_title(f"Distribution of {selected_nutriment} (PDV per portion)", fontsize=13)
-ax.set_xlabel(f"{selected_nutriment} — % Daily Value")
-ax.set_ylabel("Number of recipes")
-st.pyplot(fig)
 
-# --- Clustering explanation ---
+fig.add_hline(
+    y=50,
+    line_dash="solid",
+    line_color="red",
+    annotation_text="50%",
+    annotation_position="top left"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
 st.markdown("""
-#### Problem: beverages and snacks are treated as main dishes
-When analyzing the dataset globally, drinks, sauces, and snacks are mixed together with full meals.  
-This biases the results since their nutritional scales are not comparable.
+**Observation:** Most recipes appear healthy with nutrient intakes under 33%.
 
-#### Solution: identify main dishes based on nutritional profiles
-To solve this, we use the **nutritional composition** of each recipe instead of the unreliable `tags` column.  
-This information, initially stored as a list of strings, was cleaned and split into seven numerical features:  
-**Calories_pdv**, **Total fat**, **Sugar**, **Sodium**, **Protein**, **Saturated fat**, and **Carbohydrates**.
+**Problem:** The data includes beverages and snacks that are typically sweet or salty,
+biasing the healthiness analysis. We need to focus on main dishes.
 
-Each of these features expresses the **Percent Daily Value (PDV)** for one portion.  
-Using these seven indicators, we apply a **K-Means clustering algorithm** to automatically group similar recipes.
-
-Finally, we project these groups into two dimensions using **Principal Component Analysis (PCA)**,  
-which maximizes variance and allows for a clear visualization of the clusters.
+**Solution:** We identify main dishes using k-means clustering (k=5) based on nutritional
+composition, then visualize clusters using PCA for dimensionality reduction.
 """)
 
+st.markdown("<br>", unsafe_allow_html=True)
 
 @st.cache_data
 def run_clustering():
-
+    """Perform k-means clustering on nutritional features and reduce to 2D with PCA."""
     features = [
-        "Calories_pdv",
+        "Calories",
         "Total fat",
         "Sugar",
         "Sodium",
@@ -140,33 +139,24 @@ def run_clustering():
     ]
 
     def clean_tags(tag_str):
+        """Extract and filter relevant tags from tag string."""
         if pd.isna(tag_str):
             return []
         tags = (tag_str.strip("[]")
-                   .replace("'", "")
-                   .replace('"', "")
-                   .replace(' ', '')
-                   .split(','))
+                .replace("'", "")
+                .replace('"', "")
+                .replace(' ', '')
+                .split(','))
         ignore = {
-            "equipment",
-            "30-minutes-or-less",
-            "60-minutes-or-less",
-            "cuisine",
-            "occasion",
-            "low-in-something",
-            "dietary",
-            "time-to-make",
-            "course",
-            "main-ingredient",
-            "preparation",
-            "easy",
-            "number-of-servings",
+            "equipment", "30-minutes-or-less", "15-minutes-or-less",
+            "60-minutes-or-less", "3-steps-or-less", "4-hours-or-less",
+            "cuisine", "occasion", "low-in-something", "dietary",
+            "time-to-make", "course", "main-ingredient", "preparation",
+            "easy", "number-of-servings",
         }
-        tags = [t for t in tags if t not in ignore]
-        return tags
+        return [t for t in tags if t not in ignore]
 
-    df_recipes["clean_tags"] = pd.Series(df_recipes["tags"].apply(clean_tags))
-
+    df_recipes["clean_tags"] = df_recipes["tags"].apply(clean_tags)
     X = df_recipes[features].fillna(0)
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -185,84 +175,82 @@ def run_clustering():
 
 @st.cache_data
 def compute_tag_summary(df, top_n=3):
+    """Compute most common tags and centroid coordinates for each cluster."""
     summaries = []
     for cluster_id, group in df.groupby("cluster"):
-        tags_flat = []
-        for tags in group["clean_tags"].dropna():
-            for t in tags:
-                tags_flat.append(t)
+        tags_flat = [t for tags in group["clean_tags"].dropna() for t in tags]
         common_tags = [t for t, _ in Counter(tags_flat).most_common(top_n)]
-        mean_x = group["PC1"].mean()
-        mean_y = group["PC2"].mean()
-        summaries.append(
-            {
-                "cluster": cluster_id,
-                "tags": ", ".join(common_tags),
-                "x": mean_x,
-                "y": mean_y,
-            }
-        )
+        summaries.append({
+            "cluster": cluster_id,
+            "tags": ", ".join(common_tags),
+            "x": group["PC1"].mean(),
+            "y": group["PC2"].mean(),
+        })
     return pd.DataFrame(summaries)
 
 
-# --- Load and process data ---
 df_recipes = preprocess_data()
 df_recipes, cluster_profiles = run_clustering()
 tag_summary = compute_tag_summary(df_recipes, top_n=3)
-
-# --- PCA visualization ---
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.scatterplot(
-    data=df_recipes, x="PC1", y="PC2", hue="cluster", palette="tab10", alpha=0.7
+fig = px.scatter(
+    df_recipes,
+    x="PC1",
+    y="PC2",
+    color=df_recipes["cluster"].astype(str),
+    opacity=0.6,
+    title="Clustering of recipes based on nutritional profiles",
+    color_discrete_sequence=px.colors.qualitative.Plotly
 )
-texts = []
-for _, row in tag_summary.iterrows():
-    texts.append(
-        ax.text(
-            row["x"],
-            row["y"],
-            f"{row['tags']}",
-            fontsize=9,
-            ha="center",
-            va="center",
-            bbox=dict(
-                facecolor="white", alpha=0.6, edgecolor="none", boxstyle="round,pad=0.3"
-            ),
-        )
+
+offsets = [(40, -40), (-60, 40), (60, -20), (80, 50), (60, -20)]
+for i, row in enumerate(tag_summary.iterrows()):
+    _, r = row
+    ax_offset, ay_offset = offsets[i % len(offsets)]
+    fig.add_annotation(
+        x=r["x"],
+        y=r["y"],
+        text=r["tags"],
+        showarrow=True,
+        arrowhead=2,
+        ax=ax_offset,
+        ay=ay_offset,
+        font=dict(color="black", size=13, family="Arial"),
+        bgcolor="rgba(255,255,255,0.9)",
+        bordercolor="rgba(0,0,0,0.3)",
+        borderwidth=0.5,
+        borderpad=4
     )
-adjust_text(
-    texts,
-    only_move={"points": "y", "text": "xy"},
-    expand_points=(1.2, 1.4),
-    expand_text=(1.2, 1.4),
-    arrowprops=dict(arrowstyle="->", color="gray", lw=0.7),
-)
-ax.set_title("Clustering of recipes based on nutritional profiles")
 
-st.pyplot(fig)
-# --- Consistent palette for PCA and summary table ---
-cluster_palette = sns.color_palette(
-    "tab10", n_colors=len(df_recipes["cluster"].unique())
+fig.update_traces(marker=dict(size=5))
+fig.update_layout(
+    width=700,
+    height=600,
+    margin=dict(l=80, r=80, t=80, b=80),
+    title_font=dict(size=22)
 )
-palette_dict = {i: cluster_palette[i] for i in range(len(cluster_palette))}
 
-# --- Automatic cluster summary ---
-st.markdown("### Cluster summary — Interpreting the recipe categories")
+st.plotly_chart(fig, use_container_width=False)
+
+st.markdown("### Cluster summary")
 
 st.markdown("""
-Each cluster gathers recipes with similar nutritional patterns.  
-By analyzing their most frequent tags and average nutrition values, we can interpret each cluster as a general recipe category:
-main meals, desserts, drinks, snacks, or sauces.
-
-This step helps filter out recipes that are not actual main dishes, making the following analyses more relevant.
+Each cluster groups recipes with similar nutritional patterns. By analyzing their most
+frequent tags and nutritional values, we categorize them as main meals, desserts, drinks,
+snacks, or sauces. This helps filter out non-main dishes for more relevant analysis.
 """)
 
 cluster_summary = cluster_profiles.copy()
 cluster_summary["top_tags"] = tag_summary.set_index("cluster")["tags"]
 cluster_summary = cluster_summary.reset_index()
+cluster_palette = sns.color_palette(
+    "tab10",
+    n_colors=len(df_recipes["cluster"].unique())
+)
+palette_dict = {i: cluster_palette[i] for i in range(len(cluster_palette))}
 
 
 def categorize_cluster(tags):
+    """Categorize cluster based on tag keywords."""
     t = tags.lower()
     if any(k in t for k in ["drink", "beverage", "smoothie", "juice"]):
         return "Drink / Beverage"
@@ -278,19 +266,89 @@ def categorize_cluster(tags):
         return "Other"
 
 
+def cluster_color(cluster_id):
+    """Generate background color for cluster cell."""
+    rgb = tuple(int(255 * c) for c in palette_dict[cluster_id])
+    return f"background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]}); color: white;"
+
+
 cluster_summary["category"] = cluster_summary["top_tags"].apply(categorize_cluster)
 cols = ["cluster", "category", "top_tags"] + [
     c for c in cluster_profiles.columns if c != "cluster"
 ]
 
-
-def cluster_color(cluster_id):
-    rgb = tuple(int(255 * c) for c in palette_dict[cluster_id])
-    return f"background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]}); color: white;"
-
-
 st.dataframe(
     cluster_summary[cols].style.apply(
-        lambda s: [cluster_color(v) if s.name == "cluster" else "" for v in s], axis=0
+        lambda s: [cluster_color(v) if s.name == "cluster" else "" for v in s],
+        axis=0
     )
 )
+
+main_dish_cols = [
+    "id", "Calories", "Total fat", "Sugar", "Sodium",
+    "Protein", "Saturated fat", "Carbohydrates"
+]
+df_main_dishes = df_recipes[
+    (df_recipes["cluster"] == 1) | (df_recipes["cluster"] == 3)
+][main_dish_cols]
+
+summary = {
+    n: {
+        "≤ 33% of PDV": (df_main_dishes[n] <= THRESHOLD).sum(),
+        "> 33% of PDV": (df_main_dishes[n] > THRESHOLD).sum(),
+    }
+    for n in NUTRIENTS
+}
+
+df_summary = pd.DataFrame(summary).T
+
+df_melt = df_summary.reset_index().melt(
+    id_vars="index",
+    var_name="Category",
+    value_name="Count"
+)
+
+df_melt["Proportion"] = df_melt.groupby("index")["Count"].transform(
+    lambda x: x / x.sum() * 100
+)
+
+fig = px.bar(
+    df_melt,
+    x="index",
+    y="Proportion",
+    color="Category",
+    color_discrete_map={
+        "≤ 33% of PDV": "#0B4F6C",
+        "> 33% of PDV": "#A7C7E7",
+    },
+    title="Share of main dishes above and below 33% of daily value per nutrient",
+    labels={"index": "Nutrient", "Proportion": "Share of recipes (%)"},
+)
+
+fig.add_hline(
+    y=50,
+    line_dash="solid",
+    line_color="red",
+    annotation_text="50%",
+    annotation_position="top left"
+)
+
+st.plotly_chart(fig)
+
+st.markdown("### Conclusion")
+
+st.markdown("""
+The initial analysis suggested that most recipes on the platform are healthy, with all
+nutrients below the 33% threshold. However, after filtering for main dishes using
+clustering, the results reveal a different picture:
+
+**Key findings:**
+- **Total fat, Protein, and Saturated fat** exceed 33% PDV in most main dishes
+- This indicates that main meals on the platform tend to be rich in fats and proteins
+- The initial dataset was skewed by beverages, snacks, and desserts that are typically
+  lower in these nutrients
+
+**Interpretation:** While the platform offers diverse recipe types, main dishes tend to
+provide substantial portions of daily fat and protein intake. Users should be mindful of
+these nutritional profiles when planning balanced meals.
+""")
