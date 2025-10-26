@@ -6,6 +6,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from utils.data_loader import load_data, nutrition_categories
 
+from utils.navbar import nav
+nav('Popular')
+
+
 
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):

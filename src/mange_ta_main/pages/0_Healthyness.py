@@ -16,6 +16,10 @@ from assets import CAMENBEAR
 
 matplotlib.use("Agg")
 
+from utils.navbar import nav
+nav('Healthyness')
+
+
 # Page configuration
 st.set_page_config(page_title="Qualitative analysis of recipes")
 
