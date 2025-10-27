@@ -5,3 +5,5 @@ echo "----"
 echo "Running start installation script..." > home/admin/hook.log
 echo "Current date and time: $current_datetime" >> home/admin/hook.log
 echo "----"
+
+
