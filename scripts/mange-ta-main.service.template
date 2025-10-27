@@ -1,0 +1,13 @@
+[Unit]
+Description=Mange Ta Main
+After=network.target
+
+[Service]
+User=admin
+WorkingDirectory={{APP_LOCATION}}
+ExecStart={{HATCH_PATH}} run production:app
+StandardOutput=append:{{OUTPUT_LOG_PATH}}
+StandardError=append:{{ERROR_LOG_PATH}}
+
+[Install]
+WantedBy=default.target

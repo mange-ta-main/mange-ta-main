@@ -18,15 +18,10 @@ authors = [
 
 dependencies = [
     "numpy==2.3.*",
-    "matplotlib==3.10.*",
     "pandas==2.3.*",
-    "seaborn==0.13.*",
     "scikit-learn==1.7.*",
     "plotly==6.3.*",
     "nltk==3.9.*",
-    "spacy==3.8.*",
-    "gensim==4.3.*",
-    "torch==2.8.*",
     "streamlit==1.50.*",
     "kagglehub[pandas-datasets]==0.3.*",
     "adjusttext==1.3.0",
@@ -35,6 +30,10 @@ dependencies = [
 
 [tool.hatch.envs.default.scripts]
 app = "streamlit run src/mange_ta_main/main.py"
+init_data = "python Data/raw/import_data.py"
+
+[tool.hatch.envs.production.scripts]
+app = "streamlit run src/mange_ta_main/main.py --server.port 8080  --server.address 0.0.0.0 --server.headless true"
 init_data = "python Data/raw/import_data.py"
 
 
@@ -48,5 +47,11 @@ path = "src/mange_ta_main/__about__.py"
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".env/"
+installer = "uv"
+python = "3.12"
+
+[tool.hatch.envs.production]
+tupe = "virtual"
+path = ".env"
 installer = "uv"
 python = "3.12"
