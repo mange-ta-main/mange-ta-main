@@ -26,5 +26,18 @@ jobs:
         path: ./
         remote_path: ${{ secrets.APP_LOCATION }}
         remote_host: ${{ secrets.SSH_HOST_IP }}
-        remote_user: ${{ secrets.SSS_HOST_USER }}
+        remote_user: ${{ secrets.SSH_HOST_USER }}
         remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    # - name: Setup SSH
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
+    #
+    # - name: Debug SSH
+    #   run: |
+    #     echo "Testing SSH connection..."
+    #     ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+    #       ${{ secrets.S }}@${{ secrets.EC2_HOST }} "echo 'SSH works!'"
