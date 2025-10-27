@@ -29,6 +29,24 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
 
+    - name: Stop application
+      run: |
+        ssh ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }} \
+           cd ${{ secrets.APP_LOCATION }} && \
+           bash scripts/stop_application.sh" || true
+
     - name: Deploy with rsync
       run: |
         rsync -avz --exclude '.git' --exclude '.github' --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' --exclude '.env' ./ ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }}:${{ secrets.APP_LOCATION }}
+
+    - name: After Install 
+      run: |
+        ssh ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }} \
+           cd ${{ secrets.APP_LOCATION }} && \
+           bash scripts/after_install.sh" || true
+
+    - name: Start Application 
+      run: |
+        ssh ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }} \
+           cd ${{ secrets.APP_LOCATION }} && \
+           bash scripts/start_application.sh" || true
