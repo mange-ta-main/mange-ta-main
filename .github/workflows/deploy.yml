@@ -12,35 +12,27 @@ on:
 
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-    
-    - name: Test AWS connection
-      run: |
-        echo "Testing AWS connection..."
-        aws sts get-caller-identity
-        echo "AWS connection successful!"
-    
-    - name: Test CodeDeploy access
-      run: |
-        echo "Checking CodeDeploy application..."
-        aws deploy get-application --application-name ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
-        echo "CodeDeploy application found!"
 
-    - name: Deploy to CodeDeploy
-      uses: aws-actions/aws-codedeploy-deploy@v1
-      with:
-        application-name: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
-        deployment-group: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
-        source-directory: .
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
+
+    - name: Deploy with rsync
+      run: |
+        rsync -avz --delete \
+          --exclude '.git' \
+          --exclude '.github' \
+          --exclude 'venv' \
+          --exclude '__pycache__' \
+          --exclude '*.pyc' \
+          --exclude '.env' \
+          ./ ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }}:{{ secrets.APP_LOCATION }}   
