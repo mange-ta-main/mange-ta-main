@@ -22,13 +22,19 @@ jobs:
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
 
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
+    # - name: Setup SSH
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
 
     - name: Deploy with rsync
-      run: |
-        rsync -avz --exclude '.git' --exclude '.github' --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' --exclude '.env' ./ ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }}:${{ secrets.APP_LOCATION }}
+      uses: burnett01/rsync-deployments@7.1.0
+      with:
+        switches: -avzr --delete
+        path: ./
+        remote_path: ${{ secrets.APP_LOCATION }}
+        remote_host: ${{ secrets.SSH_HOST_IP }}
+        remote_user: ${{ secrets.SSS_HOST_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
