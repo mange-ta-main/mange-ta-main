@@ -28,7 +28,13 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST_IP }} >> ~/.ssh/known_hosts
-
+    - name: Generate service file from template
+      run: |
+        sed -e "s|{{APP_LOCATION}}|${{ secrets.APP_DIR }}|g" \
+            -e "s|{{HATCH_PATH}}|${{ secrets.HATCH_PATH }}|g" \
+            -e "s|{{OUTPUT_LOG_PATH}}|${{ secrets.OUTPUT_LOG_PATH }}|g" \
+            -e "s|{{ERROR_LOG_PATH}}|${{ secrets.ERROR_LOG_PATH }}|g" \
+            script/mange-ta-main.service.template > script/mange-ta-main.service
     - name: Stop application
       run: |
         ssh ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }} \

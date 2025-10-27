@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=admin
-WorkingDirectory={{APP_DIR}}
+WorkingDirectory={{APP_LOCATION}}
 ExecStart={{HATCH_PATH}} run production:app
 StandardOutput=append:{{OUTPUT_LOG_PATH}}
 StandardError=append:{{ERROR_LOG_PATH}}
