@@ -10,8 +10,9 @@ echo "----"
 sudo cp "$APP_LOCATION/script/mange-ta-main.service" /etc/systemd/system/mange-ta-main.service
 
 # Reload systemd
-sudo systemctl enable mange-ta-main.service >> /home/admin/hook.log
+sudo systemctl enable mange-ta-main.service &>> /home/admin/hook.log
 
-sudo systemctl daemon-reload >> /home/admin/hook.log
+sudo systemctl daemon-reload &>> /home/admin/hook.log
 
 sudo systemctl restart mange-ta-main.service
+sudo systemctl restart nginx.service
