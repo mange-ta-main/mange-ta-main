@@ -36,6 +36,10 @@ dependencies = [
 app = "streamlit run src/mange_ta_main/main.py"
 init_data = "python Data/raw/import_data.py"
 
+[tool.hatch.envs.production.scripts]
+app = "streamlit run src/mange_ta_main/main.py --server.port 8080  --server.address 0.0.0.0 --server.headless true"
+init_data = "python Data/raw/import_data.py"
+
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mange_ta_main"]
@@ -47,5 +51,11 @@ path = "src/mange_ta_main/__about__.py"
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".env/"
+installer = "uv"
+python = "3.12"
+
+[tool.hatch.envs.production]
+tupe = "virtual"
+path = ".env"
 installer = "uv"
 python = "3.12"
