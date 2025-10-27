@@ -28,11 +28,4 @@ jobs:
 
     - name: Deploy with rsync
       run: |
-        rsync -avz --delete \
-          --exclude '.git' \
-          --exclude '.github' \
-          --exclude 'venv' \
-          --exclude '__pycache__' \
-          --exclude '*.pyc' \
-          --exclude '.env' \
-          ./ ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }}:{{ secrets.APP_LOCATION }}   
+        rsync -avz --exclude '.git' --exclude '.github' --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' --exclude '.env' ./ ${{ secrets.SSH_HOST_USER }}@${{ secrets.SSH_HOST_IP }}:${{ secrets.APP_LOCATION }}
