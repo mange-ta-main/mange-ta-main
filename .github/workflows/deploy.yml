@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - feature/github_actions
+      - main
 
 # env:
 #   applicationfolder: spring-boot-hello-world-example
