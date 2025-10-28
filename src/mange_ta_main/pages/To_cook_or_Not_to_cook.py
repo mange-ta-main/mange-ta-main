@@ -6,12 +6,15 @@ import matplotlib.dates as mdates
 import seaborn as sns
 import streamlit as st
 from utils.data_loader import load_data
+from utils.sidebar import kaggle_link
 from utils.logger import logger
-from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
+from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY, CAMENBEAR
 
 
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+
+st.set_page_config(page_title="To cook or NOT to COOK?", layout="wide")
 
 # =========================================================================
 # Customed navigation bar
@@ -21,13 +24,13 @@ hide_page_navbar()
 # Generate customed navigation bar
 nav('To cook or NOT to COOK?')
 
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
 df_recipes, _ = load_data()
-
-st.set_page_config(page_title="To cook or NOT to COOK?", layout="wide")
 
 # Retrieve targeted feature
 feat_name = 'submitted'

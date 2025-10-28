@@ -17,20 +17,18 @@ from assets import CAMENBEAR
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
-# -------------------------------------------------
+
+st.set_page_config(page_title="Healthiness")
+
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
-nav('Healthyness')
-
-
+nav('Healthiness')
 
 matplotlib.use("Agg")
-
-# Page configuration
-st.set_page_config(page_title="Healthyness")
 
 # Sidebar customization
 kaggle_link()
@@ -59,7 +57,9 @@ def preprocess_data() -> pd.DataFrame:
 df_recipes = preprocess_data()
 THRESHOLD = 33
 
-st.title("Are the meals proposed by the platform healthy?")
+st.title("Healthyness")
+
+st.header("A. Are the meals proposed by the platform healthy?")
 
 st.markdown("""
 We visualize the distribution of each nutritional variable to identify how many recipes
@@ -90,7 +90,7 @@ summary = {
     for n in NUTRIENTS
 }
 
-st.markdown("### Distribution of recipes by nutrient category")
+st.markdown("### A.1 Distribution of recipes by nutrient category")
 df_summary = pd.DataFrame(summary).T
 
 df_melt = df_summary.reset_index().melt(
@@ -244,7 +244,7 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=False)
 
-st.markdown("### Cluster summary")
+st.markdown("### A.2 Cluster summary")
 
 st.markdown("""
 Each cluster groups recipes with similar nutritional patterns. By analyzing their most
@@ -348,7 +348,7 @@ fig.add_hline(
 
 st.plotly_chart(fig)
 
-st.markdown("### Conclusion")
+st.markdown("## B. Conclusion")
 
 st.markdown("""
 The initial analysis suggested that most recipes on the platform are healthy, with all

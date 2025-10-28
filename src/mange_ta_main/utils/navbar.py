@@ -20,7 +20,7 @@ pages = {   'Data':'main.py',
             'Welcome to NutriCorrelations':'pages/Introduction_NutriCorrelation.py',
             'To cook or NOT to COOK?':'pages/To_cook_or_Not_to_cook.py',
             'Contributor Activity Analysis':'pages/Contributor_Activity_Analysis.py',
-            'Healthyness':'pages/Healthyness.py',
+            'Healthiness':'pages/Healthiness.py',
             'Popular Nutritional Score':'pages/Popular_Nutricional_Score.py',
             'Univariate Tags':'pages/Univariate_Tags.py',}
 

@@ -6,9 +6,14 @@ from pathlib import Path
 
 import streamlit as st
 
+from utils.sidebar import kaggle_link
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+from assets import CAMENBEAR
 from assets import SANTE_LOGO
+
+
+st.set_page_config(page_title="Welcome", layout="wide")
 
 # =========================================================================
 # Customed navigation bar
@@ -18,8 +23,8 @@ hide_page_navbar()
 # Generate customed navigation bar
 nav('Welcome to NutriCorrelations')
 
-
-st.set_page_config(page_title="Welcome", layout="wide")
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
 # =========================================================================
 # Introduction
