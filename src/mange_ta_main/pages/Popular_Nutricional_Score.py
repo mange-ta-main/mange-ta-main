@@ -6,6 +6,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 from utils.data_loader import load_data, nutrition_categories
 
+from utils.navbar import hide_page_navbar
+from utils.navbar import nav
+
+# -------------------------------------------------
+# Customed navigation bar
+# -------------------------------------------------
+# Hide navigation bar based on pages file names
+hide_page_navbar()
+#Generate customed navigation bar
+nav('Popular Nutritional Score')
+
 
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):
