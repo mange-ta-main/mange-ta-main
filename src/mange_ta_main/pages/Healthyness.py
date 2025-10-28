@@ -30,7 +30,7 @@ nav('Healthyness')
 matplotlib.use("Agg")
 
 # Page configuration
-st.set_page_config(page_title="Qualitative analysis of recipes")
+st.set_page_config(page_title="Healthyness")
 
 # Sidebar customization
 kaggle_link()

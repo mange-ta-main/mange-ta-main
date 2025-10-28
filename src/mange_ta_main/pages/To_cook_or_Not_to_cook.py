@@ -27,7 +27,7 @@ nav('To cook or NOT to COOK?')
 # =========================================================================
 df_recipes, _ = load_data()
 
-st.set_page_config(page_title="Weekday frequencies", layout="wide")
+st.set_page_config(page_title="To cook or NOT to COOK?", layout="wide")
 
 # Retrieve targeted feature
 feat_name = 'submitted'
