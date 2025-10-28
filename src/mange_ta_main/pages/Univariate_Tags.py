@@ -6,16 +6,23 @@ from utils.data_loader import load_data, load_tags
 from utils.logger import get_logger
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+from utils.sidebar import kaggle_link
+from assets import CAMENBEAR
 
-# -------------------------------------------------
+
+st.set_page_config(page_title="Univariate Tags", layout="wide")
+
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
 nav('Univariate Tags')
 
-st.set_page_config(page_title="Univariate Tags", layout="wide")
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
+
 
 st.header("Tags")
 title = "Tags"
