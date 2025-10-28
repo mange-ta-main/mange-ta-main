@@ -12,7 +12,8 @@ license = "MIT"
 keywords = []
 authors = [
   { name = "Zaher Hamadeh", email = "hamadehzaher0@gmail.com" },
-  { name = "François-Xavier Bonnefont", email = "bonnefontfx@gmail.com"}
+  { name = "François-Xavier Bonnefont", email = "bonnefontfx@gmail.com"},
+  { name = "Oscar De La Cruz", email = "odelacruz.fierro@gmail.com"}
   # ajoutez vos noms et emails ici
 ]
 
