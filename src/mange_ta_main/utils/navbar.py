@@ -21,7 +21,7 @@ pages = {   'Data':'main.py',
             'To cook or NOT to COOK?':'pages/To_cook_or_Not_to_cook.py',
             'Contributor Activity Analysis':'pages/Contributor_Activity_Analysis.py',
             'Healthiness':'pages/Healthiness.py',
-            'Popular Nutritional Score':'pages/Popular_Nutricional_Score.py',
+            'Popular Recipes Analysis':'pages/Popular_Recipes_Analysis.py',
             'Univariate Tags':'pages/Univariate_Tags.py',}
 
 icons = ["database", "house", "clock", "graph-up","heart-pulse","graph-up-arrow","tags"]

@@ -5,20 +5,26 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from utils.data_loader import load_data, nutrition_categories
+from utils.sidebar import kaggle_link
+from assets import CAMENBEAR
 
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
-# -------------------------------------------------
+
+st.set_page_config(page_title="Populat Nutritional Score", layout="wide")
+
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 #Generate customed navigation bar
-nav('Popular Nutritional Score')
+nav('Popular Recipes Analysis')
 
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
-st.set_page_config(page_title="Populat Nutritional Score", layout="wide")
 
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):
@@ -41,15 +47,14 @@ def histogram(dataset, selected_column, title, bin_nb):
 # Load data files
 recipes, interaction_data = load_data()
 
-# Page title
-st.set_page_config(page_title="Popular Recipe Analysis", layout="wide")
-st.title("Popular Recipe Analysis")
+st.title("Popular Recipes Analysis")
+
 # Set subject of the page
 st.write("Following the request from the Health Ministry Agency, we need to know if the most popular recipes have a nutritional score at the recommended level")
 
 # Set Part I (Interaction dataset analysis)
-st.header("1 Interaction dataset analysis")
-st.subheader("1.1 Interactions Dataset")
+st.header("A. Interaction dataset analysis")
+st.subheader("A.1 Interactions Dataset")
 # Interaction dataset description
 st.markdown("""
          In this dataset, there are five attributs
@@ -72,7 +77,7 @@ st.markdown(f"""The number of evaluated recipes : {nb_recette_notees} is identic
         We will see later, for the recipe with only one evaluation, it is a self evaluation""")
 
 # Analysis of the attribut : Rating to determine the popularity
-st.subheader("1.2 Rating of recipes")
+st.subheader("A.2 Rating of recipes")
 st.write("With each evaluation, a rating from 1 to 5 is done. We built an histogram of the ratings to determine their distribution.")
 # Histogram of recipe ratings
 histogram(interaction_data, "rating", "Number per rating", 5)
@@ -80,7 +85,7 @@ histogram(interaction_data, "rating", "Number per rating", 5)
 st.write("We can see that the majority of the ratings are at level 5. This criterion is not a discriminating criterion for determining the popularity of a recipe.")
 
 # Analysis of the number of evaluation to determine the popularity
-st.subheader("1.3 Number of evaluation per recipe")
+st.subheader("A.3 Number of evaluation per recipe")
 st.write("In the next, we will determine the popularity by the number of evaluations per recipe."
          "\n We will focus on the recipes that received more than 10 evaluations.")
 # Built of a dataset with the number of evalution by recipe
@@ -92,14 +97,14 @@ histogram(evaluated_recipes_sup_10, "n_evaluated", "Distribution for the recipes
 st.write(f"The median of the number of evaluations is at {evaluated_recipes_sup_10["n_evaluated"].median()}"
          f"\n for the {evaluated_recipes["n_evaluated"].count()} recipes with more than 10 evaluations.")
 
-st.subheader("1.4 Number of evaluation per recipe")
+st.subheader("A.4 Number of evaluation per recipe")
 nb_most_popular = 200
 popular_recipes = evaluated_recipes.nlargest(nb_most_popular, "n_evaluated")
 histogram(popular_recipes, "n_evaluated", f"Distribution of evaluations for the {nb_most_popular} most popular recipes", 30)
 st.write(f"For this study, we selected {nb_most_popular} the number of the most popular recipes."
          f" The number of evaluations for the {nb_most_popular}th most popular recipe is {popular_recipes["n_evaluated"].min()} evaluations.")
 
-st.header("2 Relationship between popularity and nutritional values")
+st.header("B. Relationship between popularity and nutritional values")
 st.write("Select the nutritional parameter on the left"
          "\nMove cursors to zoom")
 
@@ -158,6 +163,6 @@ with col2:
     st.plotly_chart(fig5)    
     
     
-st.header("3 Conclusion")
+st.header("C. Conclusion")
 st.write("In conclusion, all the most popular recipes have a good nutritional quality."
          "\nIt seems that the number of evaluations can be a parameter to find a good recipe.")
