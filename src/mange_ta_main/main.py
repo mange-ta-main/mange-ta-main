@@ -7,9 +7,9 @@ from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
 
-# -------------------------------------------------
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
@@ -19,9 +19,11 @@ kaggle_link()
 
 df_recipes, df_interactions = load_data()
 
+# =========================================================================
 # Display basic info
-st.header("Data")
+# =========================================================================
 st.title("RECIPES:")
 st.dataframe(df_recipes.head())
+
 st.title("INTERACTIONS:")
 st.dataframe(df_interactions.head())
