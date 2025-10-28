@@ -9,7 +9,7 @@ def kaggle_link():
         
         <p><b>
         <big><big>
-            Data set powered by
+            Data made available by
         </big></big>
         </b></p>
         
