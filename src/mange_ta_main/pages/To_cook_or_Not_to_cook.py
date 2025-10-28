@@ -10,6 +10,20 @@ from utils.logger import logger
 from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
 
 
+from utils.navbar import hide_page_navbar
+from utils.navbar import nav
+
+# -------------------------------------------------
+# Customed navigation bar
+# -------------------------------------------------
+# Hide navigation bar based on pages file names
+hide_page_navbar()
+# Generate customed navigation bar
+nav('To cook or NOT to COOK?')
+
+
+
+
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================

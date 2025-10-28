@@ -4,8 +4,18 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from pathlib import Path
 
-
 import streamlit as st
+
+from utils.navbar import hide_page_navbar
+from utils.navbar import nav
+
+# -------------------------------------------------
+# Customed navigation bar
+# -------------------------------------------------
+# Hide navigation bar based on pages file names
+hide_page_navbar()
+# Generate customed navigation bar
+nav('Welcome to NutriCorrelations')
 
 st.header("Home Page")
 

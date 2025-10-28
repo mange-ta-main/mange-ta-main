@@ -4,6 +4,18 @@ import streamlit as st
 import plotly.express as px
 from utils.data_loader import load_data, load_tags
 from utils.logger import get_logger
+from utils.navbar import hide_page_navbar
+from utils.navbar import nav
+
+# -------------------------------------------------
+# Customed navigation bar
+# -------------------------------------------------
+# Hide navigation bar based on pages file names
+hide_page_navbar()
+# Generate customed navigation bar
+nav('Univariate Tags')
+
+
 
 st.header("Tags")
 title = "Tags"

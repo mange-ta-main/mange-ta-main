@@ -1,6 +1,19 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
+
 from utils.sidebar import kaggle_link
 from utils.data_loader import load_data
+from utils.navbar import hide_page_navbar
+from utils.navbar import nav
+
+
+# -------------------------------------------------
+# Customed navigation bar
+# -------------------------------------------------
+# Hide navigation bar based on pages file names
+hide_page_navbar()
+# Generate customed navigation bar
+nav('Data')
 
 kaggle_link()
 
