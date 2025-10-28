@@ -13,9 +13,11 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
 from utils.data_loader import load_data
+from utils.sidebar import kaggle_link
 from utils.logger import logger
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+from assets import CAMENBEAR
 
 # =========================================================================
 # Customed navigation bar
@@ -24,6 +26,9 @@ from utils.navbar import nav
 hide_page_navbar()
 # Generate customed navigation bar
 nav('Contributor Activity Analysis')
+
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
 # ==========================================================
 #             DATA LOADING

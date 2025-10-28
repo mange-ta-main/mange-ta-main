@@ -5,7 +5,10 @@ from utils.sidebar import kaggle_link
 from utils.data_loader import load_data
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+from assets import CAMENBEAR
 
+
+st.set_page_config(page_title="Data", layout="wide")
 
 # =========================================================================
 # Customed navigation bar
@@ -16,10 +19,7 @@ hide_page_navbar()
 nav('Data')
 
 kaggle_link()
-
-
-st.set_page_config(page_title="Data", layout="wide")
-
+st.sidebar.image(CAMENBEAR, width="stretch")
 
 # =========================================================================
 # Load data
