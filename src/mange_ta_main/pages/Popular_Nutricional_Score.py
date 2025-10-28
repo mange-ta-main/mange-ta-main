@@ -18,6 +18,8 @@ hide_page_navbar()
 nav('Popular Nutritional Score')
 
 
+st.set_page_config(page_title="Populat Nutritional Score", layout="wide")
+
 # To draw histograms
 def histogram(dataset, selected_column, title, bin_nb):
     # Histogram

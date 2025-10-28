@@ -15,7 +15,7 @@ hide_page_navbar()
 # Generate customed navigation bar
 nav('Univariate Tags')
 
-
+st.set_page_config(page_title="Univariate Tags", layout="wide")
 
 st.header("Tags")
 title = "Tags"

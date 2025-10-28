@@ -17,15 +17,13 @@ from utils.logger import logger
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
-# -------------------------------------------------
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
 nav('Contributor Activity Analysis')
-
-
 
 # ==========================================================
 #             DATA LOADING
@@ -42,7 +40,10 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Summary: Contributor Behavior and Temporal Analysis")
+st.title("Contributor Activity Analysis")
+
+st.header("A. Summary: Contributor Behavior and Temporal Analysis")
+
 st.markdown("""
 This page presents a **temporal and behavioral analysis** of contributors:
 - Identification of *top contributors* (P99)
@@ -66,7 +67,7 @@ n_clusters = st.sidebar.slider("Number of clusters", 2, 8, 3)
 # ==========================================================
 #                 PART 1: LORENZ CURVE
 # ==========================================================
-st.subheader("1 Contribution Concentration — Lorenz Curve")
+st.subheader("A.1 Contribution Concentration — Lorenz Curve")
 
 nb_recipes_contributor = df_recipes['contributor_id'].value_counts()
 total_recipes = nb_recipes_contributor.sum()
@@ -262,7 +263,7 @@ super_core_share = results["super_core_recipe_share"]
 # ==========================================================
 #               CLUSTER VISUALIZATION
 # ==========================================================
-st.subheader("2 Average Normalized Activity Over Time")
+st.subheader("A.2 Average Normalized Activity Over Time")
 
 activity_cols = activity.columns[:-1]  # exclude cluster column
 fig = go.Figure()
@@ -285,9 +286,9 @@ st.plotly_chart(fig)
 # ==========================================================
 #               SUPER CORE ANALYSIS
 # ==========================================================
-st.header("Super Core Contributor Analysis")
+st.header("B. Super Core Contributor Analysis")
 
-st.subheader(" Contributor Targeting Summary and Cluster Dynamics")
+st.subheader("B.1 Contributor Targeting Summary and Cluster Dynamics")
 
 """
 The Z-Score activity index represents each contributor’s relative participation dynamics — 
@@ -314,7 +315,7 @@ as it reveals **three well-defined groups of contributors** over time.
 #               CONCLUSION
 # ==========================================================
 
-st.header("Conclusion contributor Behavior and Temporal Analysis")
+st.header("C. Conclusion contributor Behavior and Temporal Analysis")
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Contributors (P99)", "277")

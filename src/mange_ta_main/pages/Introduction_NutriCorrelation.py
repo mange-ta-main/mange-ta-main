@@ -18,6 +18,9 @@ hide_page_navbar()
 # Generate customed navigation bar
 nav('Welcome to NutriCorrelations')
 
+
+st.set_page_config(page_title="Welcome", layout="wide")
+
 # =========================================================================
 # Introduction
 # =========================================================================
