@@ -2,21 +2,18 @@ from collections import Counter
 
 import streamlit as st
 import pandas as pd
-import matplotlib
-import seaborn as sns
+import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-import plotly.express as px
 
 from utils.sidebar import kaggle_link
-from utils.data_loader import load_data
+from utils.data_loader import load_recipes
 from utils.logger import logger
-from assets import CAMENBEAR
-
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
+from assets import CAMENBEAR
 # -------------------------------------------------
 # Customed navigation bar
 # -------------------------------------------------
@@ -26,8 +23,6 @@ hide_page_navbar()
 nav('Healthyness')
 
 
-
-matplotlib.use("Agg")
 
 # Page configuration
 st.set_page_config(page_title="Qualitative analysis of recipes")
@@ -43,7 +38,7 @@ logger.info("Starting healthiness analysis page...")
 def preprocess_data() -> pd.DataFrame:
     """Load and preprocess recipe data with outlier removal."""
     logger.info("Preprocessing nutritional data...")
-    df_recipes, df_interactions = load_data()
+    df_recipes = load_recipes()
     df_recipes["Calories"] = (df_recipes["Calories"] / 2000) * 100
 
     numeric_cols = df_recipes.select_dtypes(include=["number"]).columns

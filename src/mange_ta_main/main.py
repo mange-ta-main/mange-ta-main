@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 from utils.sidebar import kaggle_link
-from utils.data_loader import load_data
+from utils.data_loader import load_recipes, load_interactions
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
@@ -13,11 +13,12 @@ from utils.navbar import nav
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
-nav('Data')
+nav("Data")
 
 kaggle_link()
 
-df_recipes, df_interactions = load_data()
+df_recipes = load_recipes()
+df_interactions = load_interactions()
 
 # Display basic info
 st.header("Data")
