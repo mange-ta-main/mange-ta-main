@@ -2,6 +2,7 @@ from collections import Counter
 
 import streamlit as st
 import pandas as pd
+import seaborn as sns
 import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -200,6 +201,7 @@ def compute_tag_summary(df, top_n=3):
 
 df_recipes = preprocess_data()
 df_recipes, cluster_profiles = run_clustering()
+
 tag_summary = compute_tag_summary(df_recipes, top_n=3)
 fig = px.scatter(
     df_recipes,
@@ -255,7 +257,11 @@ cluster_palette = sns.color_palette(
     "tab10",
     n_colors=len(df_recipes["cluster"].unique())
 )
-palette_dict = {i: cluster_palette[i] for i in range(len(cluster_palette))}
+print("Cluster palette:", cluster_palette)
+cluster_palette = px.colors.qualitative.Plotly
+print("Cluster palette:", cluster_palette)
+
+palette_dict = {i: cluster_palette[i] for i in range(len(df_recipes["cluster"].unique()))}
 
 
 def categorize_cluster(tags):
@@ -277,8 +283,8 @@ def categorize_cluster(tags):
 
 def cluster_color(cluster_id):
     """Generate background color for cluster cell."""
-    rgb = tuple(int(255 * c) for c in palette_dict[cluster_id])
-    return f"background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]}); color: white;"
+
+    return f"background-color: {palette_dict[cluster_id]}; color: white;"
 
 
 cluster_summary["category"] = cluster_summary["top_tags"].apply(categorize_cluster)

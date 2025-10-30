@@ -21,8 +21,8 @@ pages = {
     "Welcome to NutriCorrelations": "pages/Introduction_NutriCorrelation.py",
     "To cook or NOT to COOK?": "pages/To_cook_or_Not_to_cook.py",
     "Contributor Activity Analysis": "pages/Contributor_Activity_Analysis.py",
-    "Healthiness": "pages/Healthyness.py",
-    "Popular Recipes Analysis": "pages/Popular_Nutricional_Score.py",
+    "Healthiness": "pages/Healthiness.py",
+    "Popular Recipes Analysis": "pages/Popular_Recipes_Analysis.py",
     "Univariate Tags": "pages/Univariate_Tags.py",
 }
 
