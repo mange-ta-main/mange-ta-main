@@ -1,22 +1,19 @@
 # ==========================================================
 #          CONTRIBUTOR ANALYSIS (Simplified Interactive)
 # ==========================================================
-import os
-import sys
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from utils.data_loader import load_data
+from utils.data_loader import load_recipes
 from utils.sidebar import kaggle_link
 from utils.logger import logger
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+
 from assets import CAMENBEAR
 
 # =========================================================================
@@ -34,7 +31,7 @@ st.sidebar.image(CAMENBEAR, width="stretch")
 #             DATA LOADING
 # ==========================================================
 
-df_recipes, _ = load_data()
+df_recipes = load_recipes()
 
 
 # ==========================================================

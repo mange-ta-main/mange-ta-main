@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import matplotlib.dates as mdates
 import seaborn as sns
 import streamlit as st
-from utils.data_loader import load_data
+from utils.data_loader import load_recipes
 from utils.sidebar import kaggle_link
 from utils.logger import logger
 from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY, CAMENBEAR
@@ -30,7 +30,7 @@ st.sidebar.image(CAMENBEAR, width="stretch")
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
-df_recipes, _ = load_data()
+df_recipes = load_recipes()
 
 # Retrieve targeted feature
 feat_name = 'submitted'

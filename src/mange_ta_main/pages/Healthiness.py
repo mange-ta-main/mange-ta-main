@@ -2,21 +2,19 @@ from collections import Counter
 
 import streamlit as st
 import pandas as pd
-import matplotlib
 import seaborn as sns
+import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-import plotly.express as px
 
 from utils.sidebar import kaggle_link
-from utils.data_loader import load_data
+from utils.data_loader import load_recipes
 from utils.logger import logger
-from assets import CAMENBEAR
-
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
+from assets import CAMENBEAR
 
 st.set_page_config(page_title="Healthiness")
 
@@ -28,7 +26,6 @@ hide_page_navbar()
 # Generate customed navigation bar
 nav('Healthiness')
 
-matplotlib.use("Agg")
 
 # Sidebar customization
 kaggle_link()
@@ -41,7 +38,7 @@ logger.info("Starting healthiness analysis page...")
 def preprocess_data() -> pd.DataFrame:
     """Load and preprocess recipe data with outlier removal."""
     logger.info("Preprocessing nutritional data...")
-    df_recipes, df_interactions = load_data()
+    df_recipes = load_recipes()
     df_recipes["Calories"] = (df_recipes["Calories"] / 2000) * 100
 
     numeric_cols = df_recipes.select_dtypes(include=["number"]).columns
@@ -167,7 +164,7 @@ def run_clustering():
             "time-to-make", "course", "main-ingredient", "preparation",
             "easy", "number-of-servings",
         }
-        return [t for t in tags if t not in ignore]
+        return tuple([t for t in tags if t not in ignore])
 
     df_recipes["clean_tags"] = df_recipes["tags"].apply(clean_tags)
     X = df_recipes[features].fillna(0)
@@ -204,6 +201,7 @@ def compute_tag_summary(df, top_n=3):
 
 df_recipes = preprocess_data()
 df_recipes, cluster_profiles = run_clustering()
+
 tag_summary = compute_tag_summary(df_recipes, top_n=3)
 fig = px.scatter(
     df_recipes,
@@ -255,11 +253,9 @@ snacks, or sauces. This helps filter out non-main dishes for more relevant analy
 cluster_summary = cluster_profiles.copy()
 cluster_summary["top_tags"] = tag_summary.set_index("cluster")["tags"]
 cluster_summary = cluster_summary.reset_index()
-cluster_palette = sns.color_palette(
-    "tab10",
-    n_colors=len(df_recipes["cluster"].unique())
-)
-palette_dict = {i: cluster_palette[i] for i in range(len(cluster_palette))}
+cluster_palette = px.colors.qualitative.Plotly
+
+palette_dict = {cluster: cluster_palette[i] for i, cluster in enumerate(df_recipes["cluster"].unique())}
 
 
 def categorize_cluster(tags):
@@ -281,8 +277,8 @@ def categorize_cluster(tags):
 
 def cluster_color(cluster_id):
     """Generate background color for cluster cell."""
-    rgb = tuple(int(255 * c) for c in palette_dict[cluster_id])
-    return f"background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]}); color: white;"
+    
+    return f"background-color: {palette_dict[cluster_id]}; color: white;"
 
 
 cluster_summary["category"] = cluster_summary["top_tags"].apply(categorize_cluster)
