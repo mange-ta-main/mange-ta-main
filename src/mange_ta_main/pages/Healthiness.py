@@ -164,7 +164,7 @@ def run_clustering():
             "time-to-make", "course", "main-ingredient", "preparation",
             "easy", "number-of-servings",
         }
-        return [t for t in tags if t not in ignore]
+        return tuple([t for t in tags if t not in ignore])
 
     df_recipes["clean_tags"] = df_recipes["tags"].apply(clean_tags)
     X = df_recipes[features].fillna(0)
@@ -255,7 +255,6 @@ cluster_summary["top_tags"] = tag_summary.set_index("cluster")["tags"]
 cluster_summary = cluster_summary.reset_index()
 cluster_palette = px.colors.qualitative.Plotly
 
-print(f"ZAZAZAZA {df_recipes['cluster'].unique()}")
 palette_dict = {cluster: cluster_palette[i] for i, cluster in enumerate(df_recipes["cluster"].unique())}
 
 
