@@ -6,91 +6,60 @@ from pathlib import Path
 
 import streamlit as st
 
+from utils.sidebar import kaggle_link
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
+from assets import CAMENBEAR
+from assets import SANTE_LOGO
 
-# -------------------------------------------------
+
+st.set_page_config(page_title="Welcome", layout="wide")
+
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
 nav('Welcome to NutriCorrelations')
 
-st.header("Home Page")
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
-# === Global style for buttons ===
+# =========================================================================
+# Introduction
+# =========================================================================
+
 st.markdown("""
-    <style>
-    div.stButton > button {
-        background-color: #0066cc;
-        color: white;
-        border: none;
-        padding: 10px 24px; 
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 6px;
-        cursor: pointer;
-        border-radius: 8px;
-        transition-duration: 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: #45a049;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Welcome to **NutriCorrelations**
 
-# === Centered buttons on two rows ===
-st.markdown("<div style='text-align:center'>", unsafe_allow_html=True)
+### When Recipes Speak Health 🩺
 
-# Row 1
-row1_col1, row1_col2, row1_col3 = st.columns([1, 1, 1], gap="large")
-with row1_col1:
-    if st.button("To Cook or Not to Cook"):
-        st.switch_page("pages/1_To_cook_or_Not_to_cook.py")
-with row1_col2:
-    if st.button("Healthyness"):
-        st.switch_page("pages/0_Healthyness.py")
-with row1_col3:
-    if st.button("Contributor Activity"):
-        st.switch_page("pages/Contributor_Activity_Analysis.py")
+In a world where food plays a central role in our well-being, understanding the connection between our culinary habits and public health has become essential. 
+**NutriCorrelations** is a collaborative initiative between our organization and the Ministry of Health, aiming to explore these links using data from several sources.
+            
+As a first step towards understaning these links, we propose to analyse the 
+[Food.com Recipes and Interactions dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data) made available by [kaggle](https://www.kaggle.com/).
+This dataset consists of 180K+ recipes and 700K+ recipe reviews covering 18 years of user interactions and uploads on Food.com (formerly GeniusKitchen).         
+       
+Each recipe is rated based on nutritional value, taste, and practicality.
+By cross-referencing this data with public health indicators, we aim to uncover meaningful correlations between certain types of dishes and observed health outcomes, such as chronic diseases, nutrient deficiencies, or obesity trends.
 
-# Row 2
-row2_col1, row2_col2, row2_col3 = st.columns([1, 1, 1], gap="large")
-with row2_col1:
-    if st.button("Popular Nutritional Score"):
-        st.switch_page("pages/Popular_Nutricional_Score.py")
-with row2_col2:
-    if st.button("Univariate Tags"):
-        st.switch_page("pages/4_univariate_tags.py")
-with row2_col3:
-    st.empty()  # spacing / alignment
+On this site, you’ll find **interactive statistics**, **clear visualizations**, and **accessible analyses** that reveal how our cooking habits and dietary patterns may impact our collective health.
+            
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-# === Introduction text ===
-st.markdown("""
-## Welcome to **NutriCorrelations**
-
-### When Recipes Speak Health
-
-In a world where food plays a central role in our well-being, understanding the connection between our culinary habits and public health has become essential.  
-**NutriCorrelations** is a collaborative initiative between our organization and the Ministry of Health, aiming to explore these links using data from our peer-reviewed recipe database.
-
-Each recipe in our collection is rated based on nutritional value, taste, and practicality.  
-By cross-referencing this data with public health indicators, we aim to uncover meaningful correlations between certain types of dishes and observed health outcomes—such as chronic diseases, nutrient deficiencies, or obesity trends.
-
-On this site, you’ll find **interactive statistics**, **clear visualizations**, and **accessible analyses** that reveal how dietary patterns impact our collective health.  
-Whether you’re a healthcare professional, researcher, educator, or simply curious, you’ll discover tools here to better understand how our food choices shape well-being.
+Whether you’re a healthcare professional, researcher, educator, or simply curious, you’ll discover tools that will help you to better understand how our food habits and choices shape well-being.
+            
 
 Our mission: to **raise awareness**, **inform**, and **encourage** healthier eating habits through reliable data.
+            
 
 Explore, compare, and join a citizen-driven approach to informed nutrition.
 """)
 
-# === Global research question / problématique ===
+# =========================================================================
+# Global research question
+# =========================================================================
 st.markdown("""
 ---
 ### Global Research Question
@@ -99,14 +68,11 @@ st.markdown("""
 ---
 """)
 
-
-# === Simple centered logo at the bottom ===
-st.markdown("<br><br>", unsafe_allow_html=True)  # spacing
-st.markdown(
-    """
-    <div style="text-align:center;">
-        <img src="../../data/Sante_logo.jpg" width="250">
-        <p><em>In partnership with Santé publique France</em></p>
-    </div>
-    """,
-    unsafe_allow_html=True)
+# ----------------------------------------
+# Logo
+# ----------------------------------------
+col1, col2 = st.columns([1, 2])
+with col2:
+    st.image(SANTE_LOGO, width=300)
+    st.markdown("""In partnership with Santé publique France""")
+# ----------------------------------------

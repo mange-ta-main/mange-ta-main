@@ -6,30 +6,31 @@ import matplotlib.dates as mdates
 import seaborn as sns
 import streamlit as st
 from utils.data_loader import load_data
+from utils.sidebar import kaggle_link
 from utils.logger import logger
-from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY
+from assets import EATING_AT_RESTAURANT, JUNK_FOOD, FOOD_DELIVERY, CAMENBEAR
 
 
 from utils.navbar import hide_page_navbar
 from utils.navbar import nav
 
-# -------------------------------------------------
+st.set_page_config(page_title="To cook or NOT to COOK?", layout="wide")
+
+# =========================================================================
 # Customed navigation bar
-# -------------------------------------------------
+# =========================================================================
 # Hide navigation bar based on pages file names
 hide_page_navbar()
 # Generate customed navigation bar
 nav('To cook or NOT to COOK?')
 
-
-
+kaggle_link()
+st.sidebar.image(CAMENBEAR, width="stretch")
 
 # =========================================================================
 # Retrieve and prepare data
 # =========================================================================
 df_recipes, _ = load_data()
-
-st.set_page_config(page_title="Weekday frequencies", layout="wide")
 
 # Retrieve targeted feature
 feat_name = 'submitted'
@@ -50,8 +51,10 @@ df_dates = df_dates.dropna()
 # =========================================================================
 # Page content
 # =========================================================================
+st.title('To cook or NOT to COOK?')
 
 st.subheader('Are people eating more outside, *e.g.* in restaurants, cafés, or ordering food to their homes instead of cooking?')
+
 # ----------------------------------------
 # Picture
 # ----------------------------------------
@@ -62,10 +65,10 @@ with col2:
 # ----------------------------------------
 
 st.markdown('''Who doesn't love eating? :yum:. The answer to that question is pretty obvious,
-however you will be surprised how your **the way you eat** is contributing impact your heealth, and of course not in your best interest.
+however you will be surprised how your **the way you eat** is contributing impact your health, and of course not in your best interest.
 
 Let's take the example of food delivery services 🍔📦. They offer consumers an attractive option instead of cooking at home or going out for diner.
-They can purchase food via mobile applications and get delivered to their house or workplace
+They can purchase food via mobile applications and get it delivered to their house or workplace
 [[1](https://www.sciencedirect.com/science/article/pii/S2405844023063399)].
 ''')
 
@@ -83,20 +86,20 @@ We may order food online for many reasons 🤔, to save time, to try something d
 or simply because we are not just in the mood for cooking ... 😑.
             
            
-Whatever the reason, is our choices of food may not always be the best ones from a nutritional point of view. A poor
+Whatever the reason is, our choices of food may not always be the best from a nutritional point of view. A poor
 diet contributes substantially to the development of noncommunicable diseases  (NCD) [[2](https://pubmed.ncbi.nlm.nih.gov/37018540/)], _e.g._ heart diseases,
  diabetes, cancer, etc., ...''')
 
 st.markdown('''
-According to the World Health Organization (WHO), NCDs result from a combination of several factors, such as, genetic, physiological, envinmental and behavioural
+According to the World Health Organization (WHO), NCDs result from a combination of several factors, such as, genetic, physiological, environmental and behavioural
 [[3](https://www.who.int/news-room/fact-sheets/detail/noncommunicable-diseases)].
 
-Behavioural factor include
+Behavioural factors include
 
-- unhealthy diets, including excess salt, sugar, and fats as well as*
-- insufficient physical activity
-- harmful use of alcohol; and
-- tobacco use (including the effects of exposure to second-hand smoke)
+- unhealthy diets, including excess salt, sugar, and fats as well as
+- insufficient physical activity,
+- harmful use of alcohol and
+- tobacco use (including the effects of exposure to second-hand smoke).
 
 
 Eating poorly could lead to conditions like high blood pressure, high blood sugar, high cholesterol, and obesity.
@@ -131,7 +134,7 @@ st.subheader('''The study case of Food.com''')
 
 st.markdown('''
 We analyzed data from generated from the website Food.com (a social network service where home cooks and even celebrity chefs can share their recipes).
-We studied particularly the frequency at which users published recipes. Our assumptions are the following:
+We particularly studied the frequency at which users published recipes. Our assumption was the following:
 ''')
 
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -148,21 +151,8 @@ with col2:
 
 
 st.markdown('''
-We got access to data of puslished recipes bethween 1999 and 2018. When we take a look to the frequency of published recipes per year we can notice some ups and downs.
- (see figure below). 
-            
-- If we take a look, _e.g._, to the years 2022,2003 and 2004 we can notice that the amount of published recipes decreased.
-- Then, the frequency increased again between 2005 and 2007 to
-- finally decrease non-stop until 2018.
-
-Based on these global observations and on the above presented assumption, we could obtain learnings about the habits of the 
-contributors to the website Food.com. The platform contributors (even new ones) could be nudged to cook more and
-share their recipes with the community.For instance,
-            
-            
-- If the frequency of publications is decreasing, advertising on the benefits of cooking at home could be triggered.
-- If the frequency of publications is increasing, the advertising could focus on rewarding its contributors, attract newones.
-''')
+We got access to data of puslished recipes bethween 1999 and 2018. When we took a look to the frequency of published recipes per year we could notice some ups and downs 
+ (see figure below).''')
 
 # ----------------------------------------
 # Histogram | Years (Plotly version)
@@ -210,8 +200,20 @@ fig_year.update_layout(
 st.plotly_chart(fig_year, use_container_width=True)
 # ----------------------------------------
 
-st.text(" ")
-st.text(" ")
+st.markdown('''            
+- If we take a look, _e.g._, to the years 2022,2003 and 2004 we can notice that the amount of published recipes decreased.
+- Then, the frequency increased again between 2005 and 2007 to
+- finally decrease again non-stop until 2018.
+
+Based on these global observations and on the above presented assumption, we might learn about the habits of the 
+contributors to the website Food.com. Based on these learnings, the platform contributors (even new ones) could be nudged, for instance:
+            
+            
+- if the frequency of global publications is decreasing, advertising on the benefits of cooking at home could be triggered.
+- On the other hand, if the frequency of publications is increasing, then the advertising could focus on rewarding the community to keep it engaged.
+''')
+
+
 
 st.markdown(
     '''We can dig deeper into the data, and that is the aim of the tool presented below.''')
@@ -219,9 +221,8 @@ st.markdown(
 
 st.subheader('''Frequency finder 🔎''')
 
-st.markdown('''The interface below called Frequency finder, will help you to to compare the frequencies for the 7 days of the week for any
-year interval between 2001,2018. This could helpful, _i.e._, to trigger a more fine and targeted advertising according to the trend of
-freuency of publications.''')
+st.markdown('''The interface below called Frequency finder, will help you to to compare the frequencies for the 7 days of the week and for any
+year interval between 2001 and 2018.''')
 
 st.subheader('''How to use it?''')
 st.markdown('''Hover your mouse pointer on the ❔ icons for details.''')
@@ -251,7 +252,7 @@ with col2:
         "Year interval.",
         options=list(range(min_y, max_y + 1)),
         value=(min_y, max_y),
-        help="Slide to choose the start and end year. If you want to visualize a single year, make lower and upper ends of the interval equal."
+        help="Slide to choose the start and end year. If you want to visualize a single year, make the lower and upper ends equal."
     )
 
 if not sel_days:
@@ -259,10 +260,10 @@ if not sel_days:
     st.stop()
 
 tick_step = st.selectbox(
-    "Horizontal labels steps (in months), _e.g._ If = 3, each label will be visualized each 3 months.",
+    "Horizontal labels steps (in months), _e.g._ If = 3, each label will be visualized each 3 months (Data is not affected)",
     options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     index=2,
-    help="Select the amount of months between each label in the horizontal axis. This will help you to have a clean visual depending on the chosen year interval size."
+    help="Select the amount of months between each label in the horizontal axis. This will help you to have a clean visual depending on the chosen year interval size (Data is not affected)."
 )
 
 # --- Filter once by year window ---
