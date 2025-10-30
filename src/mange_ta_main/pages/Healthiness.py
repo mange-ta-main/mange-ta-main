@@ -253,15 +253,10 @@ snacks, or sauces. This helps filter out non-main dishes for more relevant analy
 cluster_summary = cluster_profiles.copy()
 cluster_summary["top_tags"] = tag_summary.set_index("cluster")["tags"]
 cluster_summary = cluster_summary.reset_index()
-cluster_palette = sns.color_palette(
-    "tab10",
-    n_colors=len(df_recipes["cluster"].unique())
-)
-print("Cluster palette:", cluster_palette)
 cluster_palette = px.colors.qualitative.Plotly
-print("Cluster palette:", cluster_palette)
 
-palette_dict = {i: cluster_palette[i] for i in range(len(df_recipes["cluster"].unique()))}
+print(f"ZAZAZAZA {df_recipes['cluster'].unique()}")
+palette_dict = {cluster: cluster_palette[i] for i, cluster in enumerate(df_recipes["cluster"].unique())}
 
 
 def categorize_cluster(tags):
@@ -283,7 +278,7 @@ def categorize_cluster(tags):
 
 def cluster_color(cluster_id):
     """Generate background color for cluster cell."""
-
+    
     return f"background-color: {palette_dict[cluster_id]}; color: white;"
 
 
