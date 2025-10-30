@@ -1,10 +1,9 @@
 import streamlit as st
-import os
 
 
-def kaggle_link():    
+def kaggle_link():
     st.sidebar.markdown(
-        """       
+        """
         <div align="center">
         
         <p><b>
@@ -19,5 +18,5 @@ def kaggle_link():
         
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )

@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
-from utils.data_loader import load_data, nutrition_categories
+from utils.data_loader import load_recipes, load_interactions, nutrition_categories
 from utils.sidebar import kaggle_link
 from assets import CAMENBEAR
 
@@ -45,7 +45,8 @@ def histogram(dataset, selected_column, title, bin_nb):
     st.plotly_chart(fig)
 
 # Load data files
-recipes, interaction_data = load_data()
+recipes = load_recipes()
+interaction_data = load_interactions()
 
 st.title("Popular Recipes Analysis")
 
