@@ -23,7 +23,6 @@ pages = {
     "Contributor Activity Analysis": "pages/Contributor_Activity_Analysis.py",
     "Healthiness": "pages/Healthiness.py",
     "Popular Recipes Analysis": "pages/Popular_Recipes_Analysis.py",
-    "Univariate Tags": "pages/Univariate_Tags.py",
 }
 
 icons = [
@@ -33,7 +32,6 @@ icons = [
     "graph-up",
     "heart-pulse",
     "graph-up-arrow",
-    "tags",
 ]
 
 # Create a list of the page names
