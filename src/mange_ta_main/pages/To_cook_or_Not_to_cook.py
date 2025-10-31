@@ -2,8 +2,6 @@ import numpy as np
 import calendar
 import pandas as pd
 import plotly.graph_objects as go
-import matplotlib.dates as mdates
-import seaborn as sns
 import streamlit as st
 from utils.data_loader import load_recipes
 from utils.sidebar import kaggle_link

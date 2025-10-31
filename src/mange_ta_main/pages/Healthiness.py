@@ -2,7 +2,6 @@ from collections import Counter
 
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
