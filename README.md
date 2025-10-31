@@ -19,7 +19,6 @@
 - **🏆 Popular Recipes**: Trending recipes and popularity metrics analysis
 - **👨‍🍳 Contributor Activity**: User engagement and contribution patterns
 - **🍽️ To Cook or Not to Cook**: Cooking complexity and decision analysis
-- **🏷️ Tag Analysis**: Recipe categorization and tag co-occurrence patterns
 - **📈 NutriCorrelation**: Nutritional component relationships and correlations
 
 ### 🎯 **Key Capabilities**
@@ -39,32 +38,27 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-repo/mange-ta-main.git
+   git clone https://github.com/mange-ta-main/mange-ta-main.git
    cd mange-ta-main
    ```
 
 2. **Set up the environment**
-   ```bash
-   # Using UV (recommended)
-   uv sync
 
-   # Or using pip
-   pip install -e .
-   ```
+Install [uv](https://github.com/astral-sh/uv) and [hatch](https://hatch.pypa.io/latest/)
 
 3. **Download the dataset**
    ```bash
    # Initialize data (downloads from Kaggle)
-   uv run init_data
+   hatch run init_data
    ```
 
 4. **Launch the application**
    ```bash
    # Development mode
-   uv run app
+   hatch run app
    
    # Production mode  
-   uv run --env production app
+   hatch run production:app
    ```
 
 5. **Open your browser**
@@ -114,14 +108,7 @@ The application features a custom navigation bar with the following sections:
 
 ### Setup Development Environment
 ```bash
-# Install development dependencies
-uv sync --dev
-
-# Run tests
-pytest
-
-# Code formatting
-black src/
+hatch shell
 ```
 
 ### Adding New Pages
@@ -141,8 +128,7 @@ This project uses the **Food.com Recipes and User Interactions Dataset** from Ka
 ## 🛠️ Technology Stack
 
 - **Backend**: Python 3.12, Pandas, NumPy, Scikit-learn
-- **Frontend**: Streamlit, Plotly, Seaborn
-- **Data Processing**: NLTK for text analysis
+- **Frontend**: Streamlit, Plotly
 - **ML/Analytics**: K-means clustering, PCA, statistical modeling
 - **Package Management**: UV, Hatch
 - **Deployment**: Docker-ready with nginx configuration
@@ -152,6 +138,7 @@ This project uses the **Food.com Recipes and User Interactions Dataset** from Ka
 - **Zaher Hamadeh** - *hamadehzaher0@gmail.com*
 - **François-Xavier Bonnefont** - *bonnefontfx@gmail.com*  
 - **Oscar De La Cruz** - *odelacruz.fierro@gmail.com*
+
 
 ## 📄 License
 
